@@ -1,6 +1,6 @@
-# Decoder - AI Powered Code Debugger
+# Debuggy - AI Powered Code Debugger
 
-Decoder is an AI-powered code debugging assistant that helps developers identify, understand, and fix programming errors using Large Language Models. Built with Flask and Groq AI, Decoder provides instant debugging assistance through a simple and intuitive web interface.
+Debuggy is an AI-powered code debugging assistant that helps developers identify, understand, and fix programming errors using Large Language Models. Built with Flask and Groq AI, Decoder provides instant debugging assistance through a simple and intuitive web interface.
 
 ## Features
 
@@ -27,7 +27,6 @@ Decoder is an AI-powered code debugging assistant that helps developers identify
 ### AI
 
 * Groq API
-* Large Language Models (LLMs)
 
 ## Project Structure
 
