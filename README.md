@@ -1,13 +1,13 @@
 # Debuggy - AI Powered Code Debugger
 
-Debuggy is an AI-powered code debugging assistant that helps developers identify, understand, and fix programming errors using Large Language Models. Built with Flask and Groq AI, Decoder provides instant debugging assistance through a simple and intuitive web interface.
+Debuggy is an AI-powered code debugging assistant that helps developers identify, understand, and fix programming errors using Large Language Models. Built with Flask and Grok AI, Decoder provides instant debugging assistance through a simple and intuitive web interface.
 
 ## Features
 
 * AI-powered code debugging
 * Error analysis and explanation
 * Bug detection and suggestions
-* Fast responses using Groq LLMs
+* Fast responses using Grok AI
 * Clean and responsive user interface
 * Easy integration with different programming workflows
 
@@ -26,7 +26,7 @@ Debuggy is an AI-powered code debugging assistant that helps developers identify
 
 ### AI
 
-* Groq API
+* Grok API
 
 ## Project Structure
 
@@ -56,14 +56,6 @@ cd decoder
 pip install -r requirements.txt
 ```
 
-### Configure Environment Variables
-
-Create a `.env` file:
-
-```env
-GROQ_API_KEY=your_groq_api_key
-```
-
 ### Run the Application
 
 ```bash
@@ -74,7 +66,7 @@ python backend/app.py
 
 1. User submits code or an error message.
 2. Flask backend processes the request.
-3. Groq AI analyzes the code.
+3. Grok AI analyzes the code.
 4. The system generates debugging suggestions and explanations.
 5. Results are displayed in the frontend.
 
