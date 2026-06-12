@@ -65,6 +65,7 @@ Respond with ONLY the corrected code. No explanation, no markdown fences, no com
         })
 
     except Exception as e:
+        print("ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
