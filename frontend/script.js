@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fixOutput.value = "";
 
         try {
-            const response = await fetch("https://debuggy.onrender.com", {
+            const response = await fetch("https://debuggy.onrender.com/debug", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ code, language: selectedLanguage })
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             errorOutput.value = result.errors || "No errors detected.";
             fixOutput.value = result.suggested_fix || "No fix needed.";
         } catch (err) {
-            errorOutput.value = "Cannot connect to server. Make sure the Flask app is running on port 5000.";
+            errorOutput.value = "Cannot connect to server. Please try again later.";
             fixOutput.value = "";
         } finally {
             setLoading(false);
