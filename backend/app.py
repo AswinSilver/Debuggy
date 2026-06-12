@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-print("API KEY FOUND:", bool(GROQ_API_KEY))
+print("KEY STARTS WITH:", GROQ_API_KEY[:10] if GROQ_API_KEY else "NONE")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 def call_groq(prompt):
