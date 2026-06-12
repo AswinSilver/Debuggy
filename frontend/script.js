@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fixOutput.value = "";
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/debug", {
+            const response = await fetch("https://debuggy.onrender.com", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ code, language: selectedLanguage })
