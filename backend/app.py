@@ -20,6 +20,8 @@ def call_groq(prompt):
         "messages": [{"role": "user", "content": prompt}]
     }
     response = requests.post(GROQ_URL, headers=headers, json=body)
+    print("STATUS:", response.status_code)
+    print("BODY:", response.text)
     response.raise_for_status()
     return response.json()["choices"][0]["message"]["content"].strip()
 
