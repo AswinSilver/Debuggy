@@ -11,9 +11,7 @@ GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0
 
 def call_gemini(prompt):
     url = f"{GEMINI_URL}?key={GEMINI_API_KEY}"
-    body = {
-        "contents": [{"parts": [{"text": prompt}]}]
-    }
+    body = {"contents": [{"parts": [{"text": prompt}]}]}
     response = requests.post(url, json=body)
     response.raise_for_status()
     return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
@@ -32,33 +30,33 @@ def debug_code():
         if not code:
             return jsonify({"error": "No code provided."}), 400
 
-        error_prompt = f"""You are a code analysis expert. Analyze the following {language} code and identify ALL errors (syntax errors, logic errors, runtime errors, security issues, bad practices).
+        prompt = f"""You are a code analysis and repair expert. Analyze this {language} code.
 
 Code:
 {code}
 
-Respond in this exact format:
+Reply in EXACTLY this format, nothing else:
+
 ERRORS:
-- List each error on a new line with a dash
-If no errors found, write: ERRORS:
-- No errors detected.
+- each error on its own line with a dash
+- if no errors write: No errors detected.
 
-Only output the ERRORS section. No extra explanation."""
+FIX:
+only the corrected code here, no markdown fences, no comments"""
 
-        fix_prompt = f"""You are a code repair expert. Fix ALL errors in the following {language} code.
+        result = call_gemini(prompt)
 
-Code:
-{code}
+        errors = ""
+        fix = ""
+        if "FIX:" in result:
+            parts = result.split("FIX:", 1)
+            errors = parts[0].replace("ERRORS:", "").strip()
+            fix = parts[1].strip()
+        else:
+            errors = result
+            fix = "Could not generate fix."
 
-Respond with ONLY the corrected code. No explanation, no markdown fences, no comments."""
-
-        errors = call_gemini(error_prompt)
-        fix = call_gemini(fix_prompt)
-
-        return jsonify({
-            "errors": errors,
-            "suggested_fix": fix
-        })
+        return jsonify({"errors": errors, "suggested_fix": fix})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
