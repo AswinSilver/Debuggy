@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         fixOutput.value = "";
 
         try {
-            const response = await fetch("https://amiable-kindness-production-9620.up.railway.app/debug", {
+            const response = await fetch("https://debuggy.onrender.com/debug", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ code, language: selectedLanguage })
