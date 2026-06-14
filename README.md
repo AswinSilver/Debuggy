@@ -1,90 +1,47 @@
-# Debuggy - AI Powered Code Debugger
+# Debuggy AI
 
-Debuggy is an AI-powered code debugging assistant that helps developers identify, understand, and fix programming errors using Large Language Models. Built with Flask and Grok AI, Decoder provides instant debugging assistance through a simple and intuitive web interface.
+Debuggy AI is a modern AI-powered software engineering dashboard for code analysis, security review, complexity checks, test case generation, code smell detection, and code conversion.
+
+## Stack
+
+- Frontend: React, Vite, Tailwind CSS
+- Backend: FastAPI, Pydantic, Uvicorn
+- UI: Dark red/black developer dashboard with responsive glassmorphism panels
 
 ## Features
 
-* AI-powered code debugging
-* Error analysis and explanation
-* Bug detection and suggestions
-* Fast responses using Grok AI
-* Clean and responsive user interface
-* Easy integration with different programming workflows
+- Large code editor with line numbers
+- Language selector and dynamic analysis
+- Errors found by category
+- Suggested fixed code with copy/export actions
+- Error explanations and prevention guidance
+- Code health score with progress indicator
+- Quick summary metrics
+- Advanced pages for:
+  - Security Scanner
+  - Complexity Analyzer
+  - Test Case Generator
+  - Code Smell Detector
+  - Code Converter
+- Downloadable analysis report
+- Responsive sidebar navigation
 
-## Tech Stack
-
-### Frontend
-
-* HTML5
-* CSS3
-* JavaScript
-
-### Backend
-
-* Flask
-* Python
-
-### AI
-
-* Grok API
-
-## Project Structure
-
-```text
-decoder/
-├── backend/
-│   └── app.py
-├── frontend/
-│   ├── index.html
-│   ├── styles.css
-│   └── script.js
-└── README.md
-```
-
-## Installation
-
-### Clone Repository
+## Run Backend
 
 ```bash
-git clone https://github.com/AswinSilver/decoder.git
-cd decoder
-```
-
-### Install Dependencies
-
-```bash
+cd backend
 pip install -r requirements.txt
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Run the Application
+## Run Frontend
 
 ```bash
-python backend/app.py
+cd frontend
+npm install
+npm run dev
 ```
 
-## How It Works
+Open the frontend at `http://localhost:5173`.
 
-1. User submits code or an error message.
-2. Flask backend processes the request.
-3. Grok AI analyzes the code.
-4. The system generates debugging suggestions and explanations.
-5. Results are displayed in the frontend.
-
-## Future Enhancements
-
-* Multi-language support
-* Code optimization suggestions
-* Chat-based debugging interface
-* Error history tracking
-* File upload support
-* Code execution sandbox
-
-## Author
-
-**Aswin Raj**
-
-GitHub: https://github.com/AswinSilver
-
-## License
-
-This project is licensed under the MIT License.
+The Vite dev server proxies `/api` requests to `http://127.0.0.1:8000`.

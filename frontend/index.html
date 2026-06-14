@@ -1,103 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debuggy — Kill Your Bugs</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <button class="menu-toggle" id="menuButton">☰</button>
-        <div class="logo">
-            <span class="logo-name">Debuggy</span>
-            <span class="logo-tag">// KILL YOUR BUGS</span>
-        </div>
-        <nav class="nav-links">
-            <a href="#">Home</a>
-            <a href="#about">About</a>
-        </nav>
-
-        <div class="sidebar" id="sidebar">
-            <button class="close-btn" id="closeBtn">✖</button>
-            <div class="sidebar-content">
-                <a href="#">Home</a>
-                <a href="#about">About</a>
-            </div>
-        </div>
-        <div class="overlay" id="overlay"></div>
-    </header>
-
-    <section class="hero">
-        <div class="hero-noise"></div>
-        <div class="hero-content">
-            <p class="hero-sub">AI-POWERED CODE DEBUGGER</p>
-            <h1 class="hero-title">F*CK<br><span>THOSE</span><br>BUGS</h1>
-            <p class="hero-desc">Paste your code. Get errors identified and a clean fix — instantly.</p>
-        </div>
-        <div class="hero-image">
-        <img src="buggy.png" alt="Buggy">
-        </div>
-        <div class="hero-lines">
-            <span></span><span></span><span></span>
-        </div>
-    </section>
-
-    <section class="debugger-section">
-        <div class="section-label">// SELECT LANGUAGE</div>
-        <div class="lang-selector">
-            <button class="lang-btn active" data-lang="Python">Python</button>
-            <button class="lang-btn" data-lang="JavaScript">JavaScript</button>
-            <button class="lang-btn" data-lang="C++">C++</button>
-            <button class="lang-btn" data-lang="Java">Java</button>
-            <button class="lang-btn" data-lang="C">C</button>
-        </div>
-
-        <div class="section-label">// PASTE YOUR CODE</div>
-        <div class="code-area">
-            <div class="line-numbers" id="lineNumbers">1</div>
-            <textarea id="codeInput" placeholder="// paste your broken code here..." spellcheck="false"></textarea>
-        </div>
-
-        <button id="debugButton">
-            <span class="btn-text">RUN DEBUGGER</span>
-            <span class="btn-loader" id="btnLoader"></span>
-        </button>
-
-        <div class="output-grid">
-            <div class="output-panel">
-                <div class="panel-header">
-                    <span class="panel-dot red"></span>
-                    <span>ERRORS DETECTED</span>
-                </div>
-                <textarea id="errorOutput" readonly placeholder="Errors will appear here..."></textarea>
-            </div>
-            <div class="output-panel">
-                <div class="panel-header">
-                    <span class="panel-dot green"></span>
-                    <span>SUGGESTED FIX</span>
-                </div>
-                <textarea id="fixOutput" readonly placeholder="Fixed code will appear here..."></textarea>
-                <button class="copy-btn" id="copyBtn">COPY FIX</button>
-            </div>
-        </div>
-    </section>
-
-    <section class="about-section" id="about">
-        <div class="about-content">
-            <p class="hero-sub">BUILT WITH PRAYER AND HOPE 💕</p>
-            <h2 class="about-title">ABOUT</h2>
-            <p class="about-desc">Hi, I'm Aswinraj. I built Debuggy to make debugging less painful for developers.</p>
-            <div class="social-links">
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-                <a href="#">GitHub</a>
-            </div>
-        </div>
-    </section>
-
-    <script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debuggy AI</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
