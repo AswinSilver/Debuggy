@@ -5,25 +5,18 @@ import os
 
 app = Flask(__name__)
 CORS(app)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-print("KEY STARTS WITH:", GROQ_API_KEY[:10] if GROQ_API_KEY else "NONE")
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-def call_groq(prompt):
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+
+def call_gemini(prompt):
+    url = f"{GEMINI_URL}?key={GEMINI_API_KEY}"
     body = {
-        "model": "llama-3.3-70b-versatile",
-        "max_tokens": 2048,
-        "messages": [{"role": "user", "content": prompt}]
+        "contents": [{"parts": [{"text": prompt}]}]
     }
-    response = requests.post(GROQ_URL, headers=headers, json=body)
-    print("STATUS:", response.status_code)
-    print("BODY:", response.text)
+    response = requests.post(url, json=body)
     response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"].strip()
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
 @app.route("/")
 def home():
@@ -47,7 +40,8 @@ Code:
 Respond in this exact format:
 ERRORS:
 - List each error on a new line with a dash
-If no errors found, write: ERRORS:\n- No errors detected.
+If no errors found, write: ERRORS:
+- No errors detected.
 
 Only output the ERRORS section. No extra explanation."""
 
@@ -58,8 +52,8 @@ Code:
 
 Respond with ONLY the corrected code. No explanation, no markdown fences, no comments."""
 
-        errors = call_groq(error_prompt)
-        fix = call_groq(fix_prompt)
+        errors = call_gemini(error_prompt)
+        fix = call_gemini(fix_prompt)
 
         return jsonify({
             "errors": errors,
@@ -67,7 +61,6 @@ Respond with ONLY the corrected code. No explanation, no markdown fences, no com
         })
 
     except Exception as e:
-        print("ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
