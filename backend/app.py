@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import os
 import re
 from typing import Any
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from groq import Groq
 from pydantic import BaseModel
 
+load_dotenv()
 
-app = FastAPI(title="Debuggy AI API", version="1.0.0")
+app = FastAPI(title="Debuggy AI API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +22,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ---------------------------------------------------------------------------
+# Groq client — None if key missing (fallback to regex silently)
+# ---------------------------------------------------------------------------
+
+_groq_key = os.environ.get("GROQ_API_KEY", "")
+groq_client: Groq | None = Groq(api_key=_groq_key) if _groq_key else None
+
+
+def ask_groq(prompt: str, system: str = "") -> str | None:
+    """Call Groq. Return text or None on any failure."""
+    if not groq_client:
+        return None
+    try:
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+        response = groq_client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=messages,
+            max_tokens=1024,
+            temperature=0.3,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Pydantic models
+# ---------------------------------------------------------------------------
+
 
 class CodeRequest(BaseModel):
     code: str
@@ -26,6 +62,11 @@ class CodeRequest(BaseModel):
 
 class ConvertRequest(CodeRequest):
     target_language: str = "Python"
+
+
+# ---------------------------------------------------------------------------
+# Regex-based helpers (always run — fast, free, no latency)
+# ---------------------------------------------------------------------------
 
 
 def security_findings(code: str) -> list[dict[str, str]]:
@@ -70,17 +111,17 @@ def complexity_metrics(code: str) -> dict[str, Any]:
     branches = len(re.findall(r"\b(if|else if|switch|case|catch)\b", code))
     score = min(100, loop_count * 18 + branches * 8 + (24 if nested_loop else 0))
     if nested_loop:
-        time = "O(n^2)"
+        time_c = "O(n^2)"
         rating = "High"
     elif loop_count:
-        time = "O(n)"
+        time_c = "O(n)"
         rating = "Medium"
     else:
-        time = "O(1)"
+        time_c = "O(1)"
         rating = "Low"
     space = "O(n)" if re.search(r"\[\]|{}|new Map|new Set|append|push", code) else "O(1)"
     return {
-        "time_complexity": time,
+        "time_complexity": time_c,
         "space_complexity": space,
         "rating": rating,
         "score": score,
@@ -94,6 +135,19 @@ def complexity_metrics(code: str) -> dict[str, Any]:
             "Use hash maps or sets for repeated lookups.",
         ],
     }
+
+
+def suggest_fixed_code(code: str) -> str:
+    fixed = re.sub(r"\bif\s*\(([^)]*?)\s=\s([^=][^)]*)\)", r"if (\1 === \2)", code)
+    fixed = re.sub(r"\beval\s*\((.*?)\);?", "// Removed unsafe eval. Replace with explicit logic.", fixed)
+    fixed = re.sub(r"(password|api[_-]?key|secret)\s*=\s*[\"'][^\"']+[\"']", r"\1 = process.env.SECRET_VALUE", fixed, flags=re.IGNORECASE)
+    fixed = fixed.replace("innerHTML", "textContent")
+    return fixed
+
+
+# ---------------------------------------------------------------------------
+# Core analyze (regex base, unchanged)
+# ---------------------------------------------------------------------------
 
 
 def analyze_code(code: str, language: str) -> dict[str, Any]:
@@ -114,11 +168,10 @@ def analyze_code(code: str, language: str) -> dict[str, Any]:
     risk_penalty = sum({"Critical": 22, "High": 16, "Medium": 10, "Low": 5}.get(item["severity"], 6) for item in errors)
     health_score = max(5, 100 - risk_penalty - int(complexity["score"] / 5))
     category = "Excellent" if health_score >= 90 else "Good" if health_score >= 75 else "Average" if health_score >= 55 else "Poor" if health_score >= 30 else "Critical"
-    fixed_code = suggest_fixed_code(code)
 
     return {
         "errors": errors or [{"type": "No errors", "detail": "No obvious issues were detected.", "severity": "Info"}],
-        "fixed_code": fixed_code,
+        "fixed_code": suggest_fixed_code(code),
         "explanations": [
             "The scanner checks syntax balance, risky APIs, common logic slips, and maintainability signals.",
             "Most issues happen when input is trusted too early, control flow becomes too dense, or temporary debug code reaches production.",
@@ -139,22 +192,44 @@ def analyze_code(code: str, language: str) -> dict[str, Any]:
     }
 
 
-def suggest_fixed_code(code: str) -> str:
-    fixed = re.sub(r"\bif\s*\(([^)]*?)\s=\s([^=][^)]*)\)", r"if (\1 === \2)", code)
-    fixed = re.sub(r"\beval\s*\((.*?)\);?", "// Removed unsafe eval. Replace with explicit logic.", fixed)
-    fixed = re.sub(r"(password|api[_-]?key|secret)\s*=\s*[\"'][^\"']+[\"']", r"\1 = process.env.SECRET_VALUE", fixed, flags=re.IGNORECASE)
-    fixed = fixed.replace("innerHTML", "textContent")
-    return fixed
+# ---------------------------------------------------------------------------
+# API endpoints
+# ---------------------------------------------------------------------------
 
 
 @app.get("/")
 def home() -> dict[str, str]:
-    return {"message": "Debuggy AI API is running"}
+    return {
+        "message": "Debuggy AI API is running",
+        "ai_powered": "yes" if groq_client else "no — set GROQ_API_KEY",
+    }
 
 
 @app.post("/analyze")
 def analyze(request: CodeRequest) -> dict[str, Any]:
-    return analyze_code(request.code, request.language)
+    result = analyze_code(request.code, request.language)
+
+    ai = ask_groq(
+        prompt=(
+            f"Analyze this {request.language} code. List bugs, security issues, and improvements. "
+            f"Then provide a corrected version. Be concise and specific.\n\n```\n{request.code}\n```"
+        ),
+        system="You are an expert code reviewer. Give precise, actionable feedback. No fluff.",
+    )
+    result["ai_insight"] = ai or "AI unavailable — showing regex analysis only."
+    result["ai_fixed_code"] = None
+
+    if ai:
+        fix = ask_groq(
+            prompt=(
+                f"Return ONLY the corrected {request.language} code with no explanation, no markdown fences.\n\n```\n{request.code}\n```"
+            ),
+            system="You are a code fixer. Output only the fixed code, nothing else.",
+        )
+        if fix:
+            result["ai_fixed_code"] = fix
+
+    return result
 
 
 @app.post("/security")
@@ -162,18 +237,47 @@ def security(request: CodeRequest) -> dict[str, Any]:
     findings = security_findings(request.code)
     score = max(0, 100 - len(findings) * 17)
     risk = "Critical" if score < 35 else "High" if score < 55 else "Medium" if score < 75 else "Low"
+
+    ai = ask_groq(
+        prompt=(
+            f"Perform a security audit of this {request.language} code. "
+            f"List every vulnerability with severity (Critical/High/Medium/Low) and how to fix it.\n\n```\n{request.code}\n```"
+        ),
+        system="You are a security expert. Be specific. List CVE patterns where relevant.",
+    )
+
+    secure_fix = None
+    if ai:
+        secure_fix = ask_groq(
+            prompt=(
+                f"Return ONLY the security-hardened version of this {request.language} code. No explanation, no markdown.\n\n```\n{request.code}\n```"
+            ),
+            system="You are a security code fixer. Output only secure fixed code.",
+        )
+
     return {
         "score": score,
         "risk_level": risk,
         "findings": findings,
         "recommendations": [item["recommendation"] for item in findings] or ["No immediate security risks detected."],
-        "secure_code": suggest_fixed_code(request.code),
+        "secure_code": secure_fix or suggest_fixed_code(request.code),
+        "ai_security_audit": ai or "AI unavailable — showing pattern scan only.",
     }
 
 
 @app.post("/complexity")
 def complexity(request: CodeRequest) -> dict[str, Any]:
-    return complexity_metrics(request.code)
+    result = complexity_metrics(request.code)
+
+    ai = ask_groq(
+        prompt=(
+            f"Analyze the time and space complexity of this {request.language} code. "
+            f"Identify bottlenecks and suggest specific optimizations.\n\n```\n{request.code}\n```"
+        ),
+        system="You are an algorithms expert. Give Big-O analysis with concrete optimization tips.",
+    )
+    result["ai_complexity_analysis"] = ai or "AI unavailable — showing keyword-based analysis only."
+    return result
 
 
 @app.post("/tests")
@@ -182,29 +286,79 @@ def tests(request: CodeRequest) -> dict[str, Any]:
     match = re.search(r"function\s+(\w+)|def\s+(\w+)", request.code)
     if match:
         name = next(group for group in match.groups() if group)
+
+    fallback_cases = [
+        {"type": "Unit Test", "case": f"Verify {name} returns the expected result for a valid input."},
+        {"type": "Edge Case", "case": "Pass empty strings, empty arrays, zero, and null-like values."},
+        {"type": "Invalid Input", "case": "Pass malformed objects and unsupported types; assert clear errors."},
+        {"type": "Boundary Condition", "case": "Test minimum, maximum, and just-over-limit values."},
+        {"type": "Stress Test", "case": "Run the function with a large input set and assert acceptable timing."},
+    ]
+    fallback_copyable = (
+        f"describe('{name}', () => {{\n"
+        f"  it('handles valid input', () => {{ /* assert expected output */ }});\n"
+        f"  it('handles edge values', () => {{ /* empty, zero, null */ }});\n"
+        f"  it('rejects invalid input', () => {{ /* malformed payload */ }});\n"
+        f"  it('handles boundaries', () => {{ /* min/max */ }});\n"
+        f"  it('survives stress input', () => {{ /* large dataset */ }});\n"
+        f"}});"
+    )
+
+    ai = ask_groq(
+        prompt=(
+            f"Generate comprehensive test cases for this {request.language} code. "
+            f"Include unit tests, edge cases, invalid inputs, boundary conditions, and stress tests. "
+            f"Write actual test code using the appropriate testing framework.\n\n```\n{request.code}\n```"
+        ),
+        system="You are a QA engineer. Write real, runnable test code. Be thorough.",
+    )
+
     return {
-        "cases": [
-            {"type": "Unit Test", "case": f"Verify {name} returns the expected result for a valid input."},
-            {"type": "Edge Case", "case": "Pass empty strings, empty arrays, zero, and null-like values."},
-            {"type": "Invalid Input", "case": "Pass malformed objects and unsupported types; assert clear errors."},
-            {"type": "Boundary Condition", "case": "Test minimum, maximum, and just-over-limit values."},
-            {"type": "Stress Test", "case": "Run the function with a large input set and assert acceptable timing."},
-        ],
-        "copyable": f"describe('{name}', () => {{\n  it('handles valid input', () => {{ /* assert expected output */ }});\n  it('handles edge values', () => {{ /* empty, zero, null */ }});\n  it('rejects invalid input', () => {{ /* malformed payload */ }});\n  it('handles boundaries', () => {{ /* min/max */ }});\n  it('survives stress input', () => {{ /* large dataset */ }});\n}});",
+        "cases": fallback_cases,
+        "copyable": fallback_copyable,
+        "ai_tests": ai or "AI unavailable — showing template tests only.",
     }
 
 
 @app.post("/smells")
 def smells(request: CodeRequest) -> dict[str, Any]:
     findings = smell_findings(request.code)
-    return {"findings": findings or [{"title": "Clean Structure", "severity": "Info", "explanation": "No obvious code smells detected."}]}
+
+    ai = ask_groq(
+        prompt=(
+            f"Identify all code smells and maintainability issues in this {request.language} code. "
+            f"For each issue explain what it is, why it's bad, and how to refactor it.\n\n```\n{request.code}\n```"
+        ),
+        system="You are a clean code expert. Reference Martin Fowler's refactoring patterns where applicable.",
+    )
+
+    return {
+        "findings": findings or [{"title": "Clean Structure", "severity": "Info", "explanation": "No obvious code smells detected."}],
+        "ai_smell_analysis": ai or "AI unavailable — showing heuristic scan only.",
+    }
 
 
 @app.post("/convert")
 def convert(request: ConvertRequest) -> dict[str, str]:
-    header = f"// Converted from {request.language} to {request.target_language} by Debuggy AI\n"
+    ai_converted = ask_groq(
+        prompt=(
+            f"Convert this {request.language} code to {request.target_language}. "
+            f"Return ONLY the converted code, no explanation, no markdown fences.\n\n```\n{request.code}\n```"
+        ),
+        system=(
+            f"You are an expert {request.language} and {request.target_language} developer. "
+            f"Produce idiomatic, production-quality {request.target_language} code."
+        ),
+    )
+
+    fallback = f"// Converted from {request.language} to {request.target_language} by Debuggy AI\n" + suggest_fixed_code(request.code)
+
     return {
         "original_code": request.code,
-        "converted_code": header + suggest_fixed_code(request.code),
-        "note": "This local converter preserves intent and highlights cleanup opportunities. Connect an LLM provider for production-grade translation.",
+        "converted_code": ai_converted or fallback,
+        "note": (
+            f"Converted from {request.language} to {request.target_language} using Groq AI."
+            if ai_converted
+            else "AI unavailable — showing local conversion only. Set GROQ_API_KEY for full conversion."
+        ),
     }
