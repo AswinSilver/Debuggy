@@ -4,4 +4,3 @@ pydantic
 python-dotenv
 groq
 Flask
-gunicorn
