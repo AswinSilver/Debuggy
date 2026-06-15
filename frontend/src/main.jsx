@@ -75,8 +75,9 @@ function classNames(...parts) {
   return parts.filter(Boolean).join(" ");
 }
 
+const API_URL = "https://debuggy.onrender.com";
 async function postJson(path, body) {
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
