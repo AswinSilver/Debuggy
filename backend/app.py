@@ -46,7 +46,8 @@ def ask_groq(prompt: str, system: str = "") -> str | None:
             temperature=0.3,
         )
         return response.choices[0].message.content.strip()
-    except Exception:
+    except Exception as e:
+        print("GROQ ERROR:", str(e))
         return None
 
 
