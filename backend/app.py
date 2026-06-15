@@ -40,7 +40,7 @@ def ask_groq(prompt: str, system: str = "") -> str | None:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
         response = groq_client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.3-70b-versatile",
             messages=messages,
             max_tokens=1024,
             temperature=0.3,
