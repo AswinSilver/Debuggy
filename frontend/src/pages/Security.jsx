@@ -1,148 +1,135 @@
 import React, { useState } from "react";
-import { ShieldCheck, Loader2, Sparkles, AlertTriangle, CheckCircle, ShieldAlert } from "lucide-react";
-import Editor from "../components/Editor";
-import ResultCard from "../components/ResultCard";
-import Severity from "../components/Severity";
-import CopyButton from "../components/CopyButton";
-import { postJson } from "../utils/api";
+import { ShieldCheck, Loader2, ShieldAlert, Lock, CheckCircle } from "lucide-react";
+import CodeEditor from "../components/CodeEditor";
+import SeverityBadge from "../components/SeverityBadge";
+import CopyBtn from "../components/CopyBtn";
+import Spinner from "../components/Spinner";
+import { post } from "../lib/api";
 
-export default function Security({ code, language, showToast }) {
-  const [input, setInput] = useState(code);
-  const [result, setResult] = useState(null);
+const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
+
+export default function Security({ sharedCode, sharedLang, toast }) {
+  const [code, setCode]       = useState(sharedCode || "");
+  const [lang, setLang]       = useState(sharedLang || "JavaScript");
+  const [result, setResult]   = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function runAudit() {
-    setLoading(true);
+  async function run() {
+    if (!code.trim()) { toast("Paste some code first"); return; }
+    setLoading(true); setResult(null);
     try {
-      const data = await postJson("/security", { code: input, language });
-      setResult(data);
-      showToast("Security scan complete");
-    } catch (err) {
-      setResult({
-        error: "FastAPI server offline. Start backend to run security scan.",
-      });
-      showToast("Scan failed");
-    } finally {
-      setLoading(false);
-    }
+      setResult(await post("/security", { code, language: lang }));
+      toast("Security scan complete ✓");
+    } catch { toast("Backend offline"); }
+    finally { setLoading(false); }
   }
 
-  return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] animate-rise">
-      <section className="glass-panel p-5 h-fit">
-        <div className="mb-4 flex items-center gap-3">
-          <ShieldCheck className="text-debug-red" size={28} />
-          <div>
-            <p className="eyebrow">Advanced Analysis Tools</p>
-            <h2 className="section-title">Security Scanner</h2>
-          </div>
-        </div>
-        <div className="mt-4">
-          <Editor code={input} setCode={setInput} minHeight="360px" />
-        </div>
-        <button
-          className="button-primary mt-4 w-full"
-          onClick={runAudit}
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="animate-spin" size={18} />
-          ) : (
-            <ShieldCheck size={18} />
-          )}
-          {loading ? "Scanning Code" : "Run Security Scan"}
-        </button>
-      </section>
+  const scoreColor =
+    !result ? "#5a5466" :
+    result.score >= 80 ? "#22c55e" :
+    result.score >= 60 ? "#f59e0b" : "#ef1d32";
 
-      <section className="space-y-5">
-        {result && result.error ? (
-          <div className="glass-panel p-8 text-center text-zinc-500">
-            <AlertTriangle className="mx-auto text-yellow-500 mb-2" size={32} />
-            <p>{result.error}</p>
+  return (
+    <div className="grid gap-6 xl:grid-cols-[420px_1fr] animate-fade-up">
+      {/* Input panel */}
+      <div className="space-y-4">
+        <div className="card p-5">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+              <ShieldCheck size={18} className="text-brand-500" />
+            </div>
+            <div>
+              <p className="eyebrow">Advanced Tool</p>
+              <h2 className="text-lg font-black text-white">Security Scanner</h2>
+            </div>
           </div>
-        ) : result ? (
-          <div className="space-y-5">
+          <select value={lang} onChange={e => setLang(e.target.value)} className="select mb-3 w-full">
+            {LANGUAGES.map(l => <option key={l}>{l}</option>)}
+          </select>
+          <CodeEditor code={code} onChange={setCode} minHeight="320px" />
+          <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
+            {loading ? <><Loader2 size={16} className="animate-spin" /> Scanning…</> : <><ShieldCheck size={16} /> Run Security Scan</>}
+          </button>
+        </div>
+      </div>
+
+      {/* Results panel */}
+      <div className="space-y-5">
+        {loading ? <div className="card p-6"><Spinner label="Running security audit…" /></div>
+        : !result ? (
+          <div className="empty-state">
+            <ShieldCheck size={40} className="text-zinc-700" />
+            <p className="text-sm">Paste code and run the scan to see AI-powered security findings</p>
+          </div>
+        ) : (
+          <>
+            {/* Score + risk */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="glass-panel p-4 flex flex-col justify-center items-center text-center">
-                <span className="text-xs text-zinc-500 uppercase font-black tracking-wider">
-                  Security Score
-                </span>
-                <span className="text-5xl font-black text-white mt-1">
-                  {result.score}/100
-                </span>
-                <div className="mt-2 h-1.5 w-24 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full bg-debug-red"
-                    style={{ width: `${result.score}%` }}
-                  />
+              <div className="card flex flex-col items-center justify-center p-5 text-center">
+                <p className="eyebrow mb-2">Security Score</p>
+                <p className="text-5xl font-black" style={{ color: scoreColor }}>{result.score}</p>
+                <div className="mt-2 h-1.5 w-28 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${result.score}%`, backgroundColor: scoreColor }} />
                 </div>
               </div>
-              <div className="glass-panel p-4 flex flex-col justify-center items-center text-center">
-                <span className="text-xs text-zinc-500 uppercase font-black tracking-wider">
-                  Risk Level
-                </span>
-                <span className="text-3xl font-black text-debug-red mt-2 uppercase tracking-wide">
-                  {result.risk_level}
-                </span>
+              <div className="card flex flex-col items-center justify-center p-5 text-center">
+                <p className="eyebrow mb-2">Risk Level</p>
+                <p className="text-3xl font-black text-white">{result.risk_level}</p>
+                <SeverityBadge value={result.risk_level} />
               </div>
             </div>
 
-            <ResultCard title="Vulnerability Findings" badge="Security Scanner" icon={ShieldAlert}>
-              <div className="space-y-3">
-                {result.findings && result.findings.length > 0 ? (
-                  result.findings.map((item, index) => (
-                    <div
-                      key={index}
-                      className="rounded-lg border border-white/10 bg-black/40 p-4"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <strong className="text-white">{item.title}</strong>
-                        <Severity value={item.severity} />
+            {/* Findings */}
+            <div className="card p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <ShieldAlert size={17} className="text-brand-500" />
+                <h3 className="font-black text-white">Vulnerability Findings</h3>
+                <span className="ml-auto rounded-full bg-brand-500/15 px-2 py-0.5 text-xs font-bold text-brand-400">
+                  {result.findings?.length ?? 0}
+                </span>
+              </div>
+              {result.findings?.length ? (
+                <div className="space-y-3">
+                  {result.findings.map((f, i) => (
+                    <div key={i} className="result-item">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <strong className="text-sm font-bold text-white">{f.title}</strong>
+                        <SeverityBadge value={f.severity} />
                       </div>
-                      <p className="mt-2 text-sm text-zinc-400">
-                        {item.recommendation}
-                      </p>
+                      <p className="mt-1.5 text-xs leading-5 text-zinc-400">{f.description}</p>
+                      <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05] p-2.5">
+                        <p className="text-xs text-emerald-400"><Lock size={11} className="mr-1 inline" />{f.recommendation}</p>
+                      </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="p-3 text-sm text-zinc-500 bg-white/[0.02] rounded-lg">
-                    No immediate vulnerabilities detected.
-                  </div>
-                )}
-              </div>
-            </ResultCard>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3 text-sm text-emerald-400">
+                  <CheckCircle size={16} /> No vulnerabilities found
+                </div>
+              )}
+            </div>
 
-            <ResultCard title="AI Security Narrative Audit" badge="Analysis" icon={Sparkles}>
-              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-zinc-300 whitespace-pre-line font-sans">
-                {result.ai_security_audit}
+            {/* Secure code */}
+            <div className="card p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Lock size={17} className="text-emerald-400" />
+                  <h3 className="font-black text-white">Hardened Code</h3>
+                </div>
+                <CopyBtn text={result.secure_code} />
               </div>
-            </ResultCard>
+              <pre className="code-block text-xs">{result.secure_code}</pre>
+            </div>
 
-            <ResultCard
-              title="Hardened Secure Code"
-              badge="Refactored Code"
-              icon={CheckCircle}
-              action={
-                <CopyButton
-                  onClick={() => {
-                    navigator.clipboard.writeText(result.secure_code || "");
-                    showToast("Secure code copied");
-                  }}
-                />
-              }
-            >
-              <pre className="code-output font-mono text-xs max-h-[300px]">
-                {result.secure_code}
-              </pre>
-            </ResultCard>
-          </div>
-        ) : (
-          <div className="empty-state">
-            <ShieldCheck size={36} className="text-zinc-600 mb-2" />
-            <p>Paste code and run the security scanner to generate detailed AI reports.</p>
-          </div>
+            {/* AI narrative */}
+            <div className="card p-5">
+              <h3 className="mb-3 font-black text-white">AI Audit Narrative</h3>
+              <p className="text-sm leading-7 text-zinc-300 whitespace-pre-line">{result.audit_summary}</p>
+            </div>
+          </>
         )}
-      </section>
+      </div>
     </div>
   );
 }

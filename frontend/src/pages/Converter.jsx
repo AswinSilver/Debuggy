@@ -1,119 +1,100 @@
 import React, { useState } from "react";
-import { Repeat2, Loader2, Sparkles, AlertTriangle, FileCode } from "lucide-react";
-import Editor from "../components/Editor";
-import ResultCard from "../components/ResultCard";
-import CopyButton from "../components/CopyButton";
-import { postJson } from "../utils/api";
+import { Repeat2, Loader2, ArrowRight, FileCode2, Info } from "lucide-react";
+import CodeEditor from "../components/CodeEditor";
+import CopyBtn from "../components/CopyBtn";
+import Spinner from "../components/Spinner";
+import { post } from "../lib/api";
 
-const languages = ["Python", "Java", "JavaScript", "C", "C++", "C#", "Go"];
+const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
 
-export default function Converter({ code, language, showToast }) {
-  const [input, setInput] = useState(code);
-  const [from, setFrom] = useState(language);
-  const [to, setTo] = useState("Python");
-  const [result, setResult] = useState(null);
+export default function Converter({ sharedCode, sharedLang, toast }) {
+  const [code, setCode]       = useState(sharedCode || "");
+  const [from, setFrom]       = useState(sharedLang || "JavaScript");
+  const [to, setTo]           = useState("Python");
+  const [result, setResult]   = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function convertCode() {
-    setLoading(true);
+  async function run() {
+    if (!code.trim()) { toast("Paste some code first"); return; }
+    if (from === to) { toast("Source and target must differ"); return; }
+    setLoading(true); setResult(null);
     try {
-      const data = await postJson("/convert", {
-        code: input,
-        language: from,
-        target_language: to,
-      });
-      setResult(data);
-      showToast("Conversion complete");
-    } catch (err) {
-      setResult({
-        converted_code: `// FastAPI server offline.\n// Start backend to convert code.`,
-        note: "Failed to connect to the backend server.",
-      });
-      showToast("Conversion failed");
-    } finally {
-      setLoading(false);
-    }
+      setResult(await post("/convert", { code, language: from, target_language: to }));
+      toast("Conversion complete ✓");
+    } catch { toast("Backend offline"); }
+    finally { setLoading(false); }
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-2 animate-rise">
-      <section className="glass-panel p-5 h-fit">
-        <p className="eyebrow">Code Converter</p>
-        <h2 className="section-title">Translate code between languages</h2>
-        <div className="my-4 grid gap-3 grid-cols-[1fr_auto_1fr] items-center">
-          <select
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="select-control w-full"
-            aria-label="Source language select"
-          >
-            {languages.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
-          <span className="text-center text-sm text-zinc-500 font-bold">to</span>
-          <select
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="select-control w-full"
-            aria-label="Target language select"
-          >
-            {languages.map((item) => (
-              <option key={item}>{item}</option>
-            ))}
-          </select>
+    <div className="space-y-5 animate-fade-up">
+      {/* Language selectors row */}
+      <div className="card p-5">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+            <Repeat2 size={18} className="text-brand-500" />
+          </div>
+          <div>
+            <p className="eyebrow">Advanced Tool</p>
+            <h2 className="text-lg font-black text-white">Code Converter</h2>
+          </div>
         </div>
-        <div className="mt-4">
-          <Editor code={input} setCode={setInput} minHeight="360px" />
+        <div className="flex flex-wrap items-center gap-3">
+          <select value={from} onChange={e => setFrom(e.target.value)} className="select flex-1 min-w-[140px]">
+            {LANGUAGES.map(l => <option key={l}>{l}</option>)}
+          </select>
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+            <ArrowRight size={16} className="text-brand-500" />
+          </div>
+          <select value={to} onChange={e => setTo(e.target.value)} className="select flex-1 min-w-[140px]">
+            {LANGUAGES.map(l => <option key={l}>{l}</option>)}
+          </select>
+          <button className="btn-primary shrink-0" onClick={run} disabled={loading}>
+            {loading ? <><Loader2 size={16} className="animate-spin" /> Converting…</> : <><Repeat2 size={16} /> Convert</>}
+          </button>
         </div>
-        <button
-          className="button-primary mt-4 w-full"
-          onClick={convertCode}
-          disabled={loading}
-        >
+      </div>
+
+      {/* Editor + output side by side */}
+      <div className="grid gap-5 xl:grid-cols-2">
+        {/* Input */}
+        <div className="card p-5">
+          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-500">
+            Source — {from}
+          </p>
+          <CodeEditor code={code} onChange={setCode} minHeight="420px" label={`input.${from.toLowerCase()}`} />
+        </div>
+
+        {/* Output */}
+        <div className="card p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+              Output — {to}
+            </p>
+            {result && <CopyBtn text={result.converted_code} />}
+          </div>
           {loading ? (
-            <Loader2 className="animate-spin" size={18} />
+            <Spinner label={`Converting to ${to}…`} />
+          ) : result ? (
+            <pre className="code-block min-h-[420px] text-xs">{result.converted_code}</pre>
           ) : (
-            <Repeat2 size={18} />
+            <div className="empty-state min-h-[420px]">
+              <FileCode2 size={36} className="text-zinc-700" />
+              <p className="text-sm">Converted code will appear here</p>
+            </div>
           )}
-          {loading ? "Converting Code" : "Convert Code"}
-        </button>
-      </section>
+        </div>
+      </div>
 
-      <section className="space-y-5">
-        {result ? (
-          <div className="space-y-5">
-            <ResultCard
-              title="Converted Code"
-              badge={to}
-              icon={FileCode}
-              action={
-                <CopyButton
-                  onClick={() => {
-                    navigator.clipboard.writeText(result.converted_code || "");
-                    showToast("Converted code copied");
-                  }}
-                />
-              }
-            >
-              <pre className="code-output font-mono text-xs min-h-[460px]">
-                {result.converted_code}
-              </pre>
-            </ResultCard>
-
-            <ResultCard title="AI Conversion Considerations" badge="Analysis" icon={Sparkles}>
-              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-zinc-300 whitespace-pre-line font-sans">
-                {result.note}
-              </div>
-            </ResultCard>
+      {/* Conversion notes */}
+      {result?.notes && (
+        <div className="card p-5 animate-fade-in">
+          <div className="mb-3 flex items-center gap-2">
+            <Info size={17} className="text-amber-400" />
+            <h3 className="font-black text-white">Conversion Notes</h3>
           </div>
-        ) : (
-          <div className="empty-state">
-            <Repeat2 size={36} className="text-zinc-600 mb-2" />
-            <p>Select target language and convert code to view AI translation outputs and API compatibility logs.</p>
-          </div>
-        )}
-      </section>
+          <p className="text-sm leading-7 text-zinc-300 whitespace-pre-line">{result.notes}</p>
+        </div>
+      )}
     </div>
   );
 }

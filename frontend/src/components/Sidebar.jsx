@@ -1,85 +1,86 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  ShieldCheck,
-  Gauge,
-  FlaskConical,
-  SearchCode,
-  Repeat2,
-  X,
+  LayoutDashboard, ShieldCheck, Gauge, FlaskConical,
+  SearchCode, Repeat2, X, Zap,
 } from "lucide-react";
-import { classNames } from "../utils/helpers";
+import { cx } from "../lib/utils";
 
-const pages = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/security", label: "Security Scanner", icon: ShieldCheck },
-  { path: "/complexity", label: "Complexity Analyzer", icon: Gauge },
-  { path: "/tests", label: "Test Case Generator", icon: FlaskConical },
-  { path: "/smells", label: "Code Smell Detector", icon: SearchCode },
-  { path: "/converter", label: "Code Converter", icon: Repeat2 },
+const LINKS = [
+  { to: "/",           label: "Dashboard",          icon: LayoutDashboard },
+  { to: "/security",   label: "Security Scanner",   icon: ShieldCheck },
+  { to: "/complexity", label: "Complexity Analyzer",icon: Gauge },
+  { to: "/tests",      label: "Test Generator",     icon: FlaskConical },
+  { to: "/smells",     label: "Code Smell Detector",icon: SearchCode },
+  { to: "/converter",  label: "Code Converter",     icon: Repeat2 },
 ];
 
-export default function Sidebar({ isOpen, onClose }) {
+export default function Sidebar({ open, onClose }) {
   return (
-    <aside
-      className={classNames(
-        "fixed inset-y-0 left-0 z-40 w-72 border-r border-white/10 bg-black/85 p-5 backdrop-blur-2xl transition-transform lg:translate-x-0",
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      )}
-    >
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded bg-debug-red text-xl font-black shadow-redglow">
-            D
-          </div>
-          <div>
-            <p className="text-lg font-extrabold">Debuggy AI</p>
-            <p className="text-xs text-zinc-400">Software quality platform</p>
-          </div>
-        </div>
-        <button
-          className="rounded border border-white/10 p-2 lg:hidden"
+    <>
+      {/* Mobile backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={onClose}
-          aria-label="Close menu"
-        >
-          <X size={18} />
-        </button>
-      </div>
+        />
+      )}
 
-      <nav className="space-y-2">
-        {pages.map((page) => {
-          const Icon = page.icon;
-          return (
+      <aside
+        className={cx(
+          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-white/[0.07] bg-[#08080c]/95 backdrop-blur-2xl transition-transform duration-300 ease-in-out",
+          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-between px-5 py-5">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 shadow-glow">
+              <Zap size={18} className="text-white" />
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#08080c]" />
+            </div>
+            <div>
+              <p className="text-sm font-black leading-none text-white">Debuggy AI</p>
+              <p className="mt-0.5 text-[10px] text-zinc-500">powered by Groq</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-zinc-500 transition hover:text-white lg:hidden"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
+          {LINKS.map(({ to, label, icon: Icon }) => (
             <NavLink
-              key={page.path}
-              to={page.path}
+              key={to}
+              to={to}
+              end={to === "/"}
               onClick={onClose}
               className={({ isActive }) =>
-                classNames(
-                  "group flex w-full items-center gap-3 rounded-lg border px-3 py-3 text-left text-sm transition",
-                  isActive
-                    ? "border-debug-red/70 bg-debug-red/15 text-white shadow-redglow"
-                    : "border-white/5 bg-white/[0.03] text-zinc-400 hover:border-debug-red/40 hover:text-white"
-                )
+                cx("nav-link", isActive ? "nav-link-active" : "nav-link-inactive")
               }
             >
-              <Icon size={18} />
-              <span>{page.label}</span>
+              <Icon size={17} className="shrink-0" />
+              <span className="text-[13px]">{label}</span>
             </NavLink>
-          );
-        })}
-      </nav>
+          ))}
+        </nav>
 
-      <div className="absolute bottom-5 left-5 right-5 rounded-lg border border-debug-red/30 bg-debug-red/10 p-4">
-        <div className="flex items-center gap-2 text-sm font-semibold">
-          <span className="h-2.5 w-2.5 rounded-full bg-debug-red shadow-redglow" />
-          AI review engine online
+        {/* Status badge */}
+        <div className="mx-3 mb-4 rounded-xl border border-brand-500/20 bg-brand-500/[0.07] p-3">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 animate-pulse-slow rounded-full bg-brand-500 shadow-glow" />
+            <span className="text-xs font-bold text-white">AI Engine Active</span>
+          </div>
+          <p className="mt-1 text-[11px] leading-4 text-zinc-500">
+            Groq · llama-3.3-70b-versatile
+          </p>
         </div>
-        <p className="mt-2 text-xs leading-5 text-zinc-400">
-          Pure Groq LLM orchestration with structured schema response mapping.
-        </p>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -1,137 +1,129 @@
 import React, { useState } from "react";
-import { Gauge, Loader2, Sparkles, AlertTriangle, Cpu, TrendingUp } from "lucide-react";
-import Editor from "../components/Editor";
-import ResultCard from "../components/ResultCard";
-import Metric from "../components/Metric";
-import { postJson } from "../utils/api";
+import { Gauge, Loader2, Cpu, TrendingUp, Clock, Database } from "lucide-react";
+import CodeEditor from "../components/CodeEditor";
+import Spinner from "../components/Spinner";
+import { post } from "../lib/api";
 
-export default function Complexity({ code, language, showToast }) {
-  const [input, setInput] = useState(code);
-  const [result, setResult] = useState(null);
+const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
+
+function BigOChip({ label, value }) {
+  return (
+    <div className="card flex flex-col items-center justify-center p-5 text-center">
+      <p className="eyebrow mb-2">{label}</p>
+      <p className="font-mono text-3xl font-black text-white">{value || "—"}</p>
+    </div>
+  );
+}
+
+export default function Complexity({ sharedCode, sharedLang, toast }) {
+  const [code, setCode]       = useState(sharedCode || "");
+  const [lang, setLang]       = useState(sharedLang || "JavaScript");
+  const [result, setResult]   = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function runComplexityAnalysis() {
-    setLoading(true);
+  async function run() {
+    if (!code.trim()) { toast("Paste some code first"); return; }
+    setLoading(true); setResult(null);
     try {
-      const data = await postJson("/complexity", { code: input, language });
-      setResult(data);
-      showToast("Complexity analysis complete");
-    } catch (err) {
-      setResult({
-        error: "FastAPI server offline. Start backend to run complexity audit.",
-      });
-      showToast("Audit failed");
-    } finally {
-      setLoading(false);
-    }
+      setResult(await post("/complexity", { code, language: lang }));
+      toast("Complexity analysis done ✓");
+    } catch { toast("Backend offline"); }
+    finally { setLoading(false); }
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] animate-rise">
-      <section className="glass-panel p-5 h-fit">
+    <div className="grid gap-6 xl:grid-cols-[420px_1fr] animate-fade-up">
+      {/* Input */}
+      <div className="card p-5 h-fit">
         <div className="mb-4 flex items-center gap-3">
-          <Gauge className="text-debug-red" size={28} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+            <Gauge size={18} className="text-brand-500" />
+          </div>
           <div>
-            <p className="eyebrow">Advanced Analysis Tools</p>
-            <h2 className="section-title">Complexity Analyzer</h2>
+            <p className="eyebrow">Advanced Tool</p>
+            <h2 className="text-lg font-black text-white">Complexity Analyzer</h2>
           </div>
         </div>
-        <div className="mt-4">
-          <Editor code={input} setCode={setInput} minHeight="360px" />
-        </div>
-        <button
-          className="button-primary mt-4 w-full"
-          onClick={runComplexityAnalysis}
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="animate-spin" size={18} />
-          ) : (
-            <Gauge size={18} />
-          )}
-          {loading ? "Analyzing Complexity" : "Run Complexity Analysis"}
+        <select value={lang} onChange={e => setLang(e.target.value)} className="select mb-3 w-full">
+          {LANGUAGES.map(l => <option key={l}>{l}</option>)}
+        </select>
+        <CodeEditor code={code} onChange={setCode} minHeight="320px" />
+        <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
+          {loading ? <><Loader2 size={16} className="animate-spin" /> Analyzing…</> : <><Gauge size={16} /> Analyze Complexity</>}
         </button>
-      </section>
+      </div>
 
-      <section className="space-y-5">
-        {result && result.error ? (
-          <div className="glass-panel p-8 text-center text-zinc-500">
-            <AlertTriangle className="mx-auto text-yellow-500 mb-2" size={32} />
-            <p>{result.error}</p>
-          </div>
-        ) : result ? (
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass-panel p-4 flex flex-col justify-center items-center text-center">
-                <span className="text-xs text-zinc-500 uppercase font-black tracking-wider">
-                  Time Complexity
-                </span>
-                <span className="text-4xl font-black text-debug-red mt-2 font-mono">
-                  {result.time_complexity}
-                </span>
-              </div>
-              <div className="glass-panel p-4 flex flex-col justify-center items-center text-center">
-                <span className="text-xs text-zinc-500 uppercase font-black tracking-wider">
-                  Space Complexity
-                </span>
-                <span className="text-4xl font-black text-white mt-2 font-mono">
-                  {result.space_complexity}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Metric label="Efficiency Rating" value={result.rating} />
-              <Metric label="Optimization Score" value={`${result.score}/100`} />
-            </div>
-
-            <ResultCard title="Performance Bottlenecks" badge="Critical issues" icon={Cpu}>
-              <div className="space-y-2">
-                {result.bottlenecks && result.bottlenecks.length > 0 ? (
-                  result.bottlenecks.map((item, index) => (
-                    <div
-                      key={index}
-                      className="rounded-lg bg-white/[0.03] border border-white/5 p-3 text-sm text-zinc-300"
-                    >
-                      {item}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-zinc-500 text-sm">No bottlenecks identified.</p>
-                )}
-              </div>
-            </ResultCard>
-
-            <ResultCard title="Optimization Tips" badge="Suggestions" icon={TrendingUp}>
-              <div className="space-y-2">
-                {result.suggestions && result.suggestions.length > 0 ? (
-                  result.suggestions.map((item, index) => (
-                    <div
-                      key={index}
-                      className="rounded-lg bg-white/[0.03] border border-white/5 p-3 text-sm text-zinc-300"
-                    >
-                      {item}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-zinc-500 text-sm">Code is already highly optimized.</p>
-                )}
-              </div>
-            </ResultCard>
-
-            <ResultCard title="AI Algorithmic Audit Narrative" badge="Deep Dive" icon={Sparkles}>
-              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-zinc-300 whitespace-pre-line font-sans">
-                {result.ai_complexity_analysis}
-              </div>
-            </ResultCard>
+      {/* Results */}
+      <div className="space-y-5">
+        {loading ? <div className="card p-6"><Spinner label="Computing algorithmic complexity…" /></div>
+        : !result ? (
+          <div className="empty-state">
+            <Gauge size={40} className="text-zinc-700" />
+            <p className="text-sm">Run the analyzer to get Big-O ratings and optimization tips</p>
           </div>
         ) : (
-          <div className="empty-state">
-            <Gauge size={36} className="text-zinc-600 mb-2" />
-            <p>Paste code and run analysis to calculate performance metrics.</p>
-          </div>
+          <>
+            {/* Big-O chips */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <BigOChip label="Time Complexity"  value={result.time_complexity} />
+              <BigOChip label="Space Complexity" value={result.space_complexity} />
+              <div className="card flex flex-col items-center justify-center p-5 text-center">
+                <p className="eyebrow mb-2">Efficiency Rating</p>
+                <p className="text-2xl font-black text-white">{result.rating}</p>
+              </div>
+              <div className="card flex flex-col items-center justify-center p-5 text-center">
+                <p className="eyebrow mb-2">Efficiency Score</p>
+                <p className="text-2xl font-black text-white">{result.score}/100</p>
+                <div className="mt-2 h-1.5 w-20 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-brand-500" style={{ width: `${result.score}%` }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottlenecks */}
+            {result.bottlenecks?.length > 0 && (
+              <div className="card p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <Cpu size={17} className="text-brand-500" />
+                  <h3 className="font-black text-white">Performance Bottlenecks</h3>
+                </div>
+                <div className="space-y-2">
+                  {result.bottlenecks.map((b, i) => (
+                    <div key={i} className="result-item flex gap-3">
+                      <Clock size={14} className="mt-0.5 shrink-0 text-amber-500" />
+                      <p className="text-sm text-zinc-300">{b}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Suggestions */}
+            {result.suggestions?.length > 0 && (
+              <div className="card p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <TrendingUp size={17} className="text-emerald-400" />
+                  <h3 className="font-black text-white">Optimization Suggestions</h3>
+                </div>
+                <div className="space-y-2">
+                  {result.suggestions.map((s, i) => (
+                    <div key={i} className="result-item flex gap-3">
+                      <Database size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+                      <p className="text-sm text-zinc-300">{s}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* AI narrative */}
+            <div className="card p-5">
+              <h3 className="mb-3 font-black text-white">AI Algorithmic Narrative</h3>
+              <p className="text-sm leading-7 text-zinc-300 whitespace-pre-line">{result.analysis}</p>
+            </div>
+          </>
         )}
-      </section>
+      </div>
     </div>
   );
 }
