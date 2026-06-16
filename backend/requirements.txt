@@ -1,6 +1,5 @@
-﻿fastapi
+fastapi
 uvicorn[standard]
 pydantic
 python-dotenv
 groq
-Flask
