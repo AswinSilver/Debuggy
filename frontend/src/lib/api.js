@@ -1,9 +1,9 @@
-// Shared API utility — auto-selects local vs production backend
+// API base URL resolution:
+//  1. If VITE_API_URL is set (set this in Vercel env vars = your Render URL)
+//  2. Local dev fallback → direct to FastAPI on :8000
 const BASE =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://127.0.0.1:8000"
-    : "";           // same-origin on Render (serve from FastAPI or configure proxy)
+  import.meta.env.VITE_API_URL?.replace(/\/$/, "") ||   // strip trailing slash
+  "http://127.0.0.1:8000";
 
 export async function post(path, body) {
   const res = await fetch(`${BASE}${path}`, {
