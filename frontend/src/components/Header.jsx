@@ -17,7 +17,6 @@ export default function Header({ title, onMenuOpen, analysis, code, language }) 
             <Menu size={20} />
           </button>
           <div>
-            <p className="eyebrow">Developer Platform</p>
             <h1 className="text-xl font-black leading-none text-white sm:text-2xl">{title}</h1>
           </div>
         </div>
@@ -29,7 +28,7 @@ export default function Header({ title, onMenuOpen, analysis, code, language }) 
               className="btn-ghost text-xs"
               onClick={() =>
                 download(
-                  "debuggy-report.json",
+                  "codexa-report.json",
                   JSON.stringify(analysis, null, 2),
                   "application/json"
                 )

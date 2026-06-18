@@ -40,8 +40,8 @@ export default function Sidebar({ open, onClose }) {
               <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#08080c]" />
             </div>
             <div>
-              <p className="text-sm font-black leading-none text-white">Debuggy AI</p>
-              <p className="mt-0.5 text-[10px] text-zinc-500">powered by Groq</p>
+              <p className="text-sm font-black leading-none text-white">Codexa</p>
+              <p className="mt-0.5 text-[10px] text-zinc-500">Code Analysis Platform</p>
             </div>
           </div>
           <button
@@ -73,11 +73,11 @@ export default function Sidebar({ open, onClose }) {
         {/* Status badge */}
         <div className="mx-3 mb-4 rounded-xl border border-brand-500/20 bg-brand-500/[0.07] p-3">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 animate-pulse-slow rounded-full bg-brand-500 shadow-glow" />
-            <span className="text-xs font-bold text-white">AI Engine Active</span>
+            <span className="h-2 w-2 animate-pulse-slow rounded-full bg-emerald-400" />
+            <span className="text-xs font-bold text-white">System Online</span>
           </div>
           <p className="mt-1 text-[11px] leading-4 text-zinc-500">
-            Groq · llama-3.3-70b-versatile
+            All analysis engines ready
           </p>
         </div>
       </aside>
