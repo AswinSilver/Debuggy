@@ -4,6 +4,7 @@ import CodeEditor from "../components/CodeEditor";
 import SeverityBadge from "../components/SeverityBadge";
 import CopyBtn from "../components/CopyBtn";
 import Spinner from "../components/Spinner";
+import SyntaxHighlight from "../components/SyntaxHighlight";
 import { post } from "../lib/api";
 
 const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
@@ -119,7 +120,7 @@ export default function Security({ sharedCode, sharedLang, toast }) {
                 </div>
                 <CopyBtn text={result.secure_code} />
               </div>
-              <pre className="code-block text-xs">{result.secure_code}</pre>
+              <SyntaxHighlight code={result.secure_code} />
             </div>
 
             {/* AI narrative */}

@@ -80,11 +80,21 @@ body {
     @apply text-2xl font-black tracking-tight text-white sm:text-3xl;
   }
 
-  /* Code area */
+  /* Code area — plain */
   .code-block {
     @apply rounded-xl border border-white/[0.07] bg-[#07070b]
            p-4 font-mono text-sm leading-6 text-zinc-200
            overflow-auto max-h-[500px] whitespace-pre-wrap;
+  }
+
+  /* Syntax-highlighted code block */
+  .syntax-block {
+    @apply rounded-xl border border-white/[0.07] bg-[#07070b]
+           font-mono text-sm leading-6
+           overflow-auto max-h-[520px];
+    white-space: pre;
+    padding: 0.75rem 0;
+    counter-reset: line;
   }
 
   /* Language / option select */
@@ -142,9 +152,37 @@ body {
   }
 }
 
+/* ── Syntax token colours ────────────────────────────────────────────────── */
+
+.code-line {
+  display: block;
+  line-height: 1.65;
+}
+
+.code-line:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.line-num {
+  display: inline-block;
+  width: 3em;
+  padding-right: 1.25em;
+  text-align: right;
+  color: #3d3550;
+  user-select: none;
+  font-size: 0.72em;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  margin-right: 1em;
+}
+
+.line-body {
+  color: #cdd3de;
+}
+
 /* ── Noise texture overlay ────────────────────────────────────────────────── */
 
 .noise::after {
+
   content: "";
   position: fixed;
   inset: 0;
@@ -177,7 +215,24 @@ body {
 
 .grid-bg {
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 48px 48px;
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.006) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.006) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 24px 24px, 24px 24px;
 }
+
+/* ── Typewriter cursor blink ─────────────────────────────────────────────── */
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: "▌";
+  animation: blink 1s step-end infinite;
+  color: #ef1d32;
+  margin-left: 1px;
+}
+

@@ -3,6 +3,7 @@ import { FlaskConical, Loader2, CheckSquare, FileCode, BookOpen } from "lucide-r
 import CodeEditor from "../components/CodeEditor";
 import CopyBtn from "../components/CopyBtn";
 import Spinner from "../components/Spinner";
+import SyntaxHighlight from "../components/SyntaxHighlight";
 import { post } from "../lib/api";
 
 const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
@@ -97,7 +98,7 @@ export default function Tests({ sharedCode, sharedLang, toast }) {
                 </div>
                 <CopyBtn text={result.test_code} />
               </div>
-              <pre className="code-block text-xs">{result.test_code}</pre>
+              <SyntaxHighlight code={result.test_code} />
             </div>
 
             {/* Strategy */}

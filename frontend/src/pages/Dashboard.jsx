@@ -9,6 +9,7 @@ import CodeEditor from "../components/CodeEditor";
 import HealthRing from "../components/HealthRing";
 import SeverityBadge from "../components/SeverityBadge";
 import CopyBtn from "../components/CopyBtn";
+import SyntaxHighlight from "../components/SyntaxHighlight";
 import { post } from "../lib/api";
 
 const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
@@ -132,7 +133,7 @@ export default function Dashboard({ sharedCode, setSharedCode, sharedLang, setSh
               </div>
               <CopyBtn text={result.fixed_code} />
             </div>
-            <pre className="code-block">{result.fixed_code}</pre>
+            <SyntaxHighlight code={result.fixed_code} />
           </div>
 
           {/* Explanations */}

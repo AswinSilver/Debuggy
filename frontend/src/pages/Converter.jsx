@@ -3,6 +3,7 @@ import { Repeat2, Loader2, ArrowRight, FileCode2, Info } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
 import CopyBtn from "../components/CopyBtn";
 import Spinner from "../components/Spinner";
+import SyntaxHighlight from "../components/SyntaxHighlight";
 import { post } from "../lib/api";
 
 const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
@@ -75,7 +76,7 @@ export default function Converter({ sharedCode, sharedLang, toast }) {
           {loading ? (
             <Spinner label={`Converting to ${to}…`} />
           ) : result ? (
-            <pre className="code-block min-h-[420px] text-xs">{result.converted_code}</pre>
+            <SyntaxHighlight code={result.converted_code} className="min-h-[420px]" />
           ) : (
             <div className="empty-state min-h-[420px]">
               <FileCode2 size={36} className="text-zinc-700" />

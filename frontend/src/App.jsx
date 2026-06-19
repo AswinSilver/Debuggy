@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header  from "./components/Header";
+import SpaceBg from "./components/SpaceBg";
 import Dashboard  from "./pages/Dashboard";
 import Security   from "./pages/Security";
 import Complexity from "./pages/Complexity";
@@ -37,12 +38,10 @@ export default function App() {
 
   return (
     <div className="noise min-h-screen bg-[#060608] text-[#f1eef0]">
-      {/* Ambient blobs */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full bg-brand-500/[0.06] blur-[120px]" />
-        <div className="absolute -right-40 top-1/3 h-[400px] w-[400px] rounded-full bg-brand-700/[0.08] blur-[100px]" />
-        <div className="grid-bg absolute inset-0 opacity-100" />
-      </div>
+      {/* Animated space background */}
+      <SpaceBg />
+      {/* Subtle grid overlay */}
+      <div className="grid-bg pointer-events-none fixed inset-0 opacity-60" style={{ zIndex: 1 }} />
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
