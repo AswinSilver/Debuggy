@@ -4,9 +4,8 @@ import CodeEditor from "../components/CodeEditor";
 import CopyBtn from "../components/CopyBtn";
 import Spinner from "../components/Spinner";
 import SyntaxHighlight from "../components/SyntaxHighlight";
+import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
-
-const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
 
 export default function Converter({ sharedCode, sharedLang, toast }) {
   const [code, setCode]       = useState(sharedCode || "");
@@ -40,15 +39,11 @@ export default function Converter({ sharedCode, sharedLang, toast }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <select value={from} onChange={e => setFrom(e.target.value)} className="select flex-1 min-w-[140px]">
-            {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-          </select>
+          <LanguageSelect value={from} onChange={setFrom} className="flex-1" />
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
             <ArrowRight size={16} className="text-brand-500" />
           </div>
-          <select value={to} onChange={e => setTo(e.target.value)} className="select flex-1 min-w-[140px]">
-            {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-          </select>
+          <LanguageSelect value={to} onChange={setTo} className="flex-1" />
           <button className="btn-primary shrink-0" onClick={run} disabled={loading}>
             {loading ? <><Loader2 size={16} className="animate-spin" /> Converting…</> : <><Repeat2 size={16} /> Convert</>}
           </button>

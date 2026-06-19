@@ -5,9 +5,8 @@ import SeverityBadge from "../components/SeverityBadge";
 import CopyBtn from "../components/CopyBtn";
 import Spinner from "../components/Spinner";
 import SyntaxHighlight from "../components/SyntaxHighlight";
+import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
-
-const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
 
 export default function Smells({ sharedCode, sharedLang, toast }) {
   const [code, setCode]       = useState(sharedCode || "");
@@ -38,9 +37,7 @@ export default function Smells({ sharedCode, sharedLang, toast }) {
             <h2 className="text-lg font-black text-white">Code Smell Detector</h2>
           </div>
         </div>
-        <select value={lang} onChange={e => setLang(e.target.value)} className="select mb-3 w-full">
-          {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-        </select>
+        <LanguageSelect value={lang} onChange={setLang} className="mb-3" />
         <CodeEditor code={code} onChange={setCode} minHeight="320px" />
         <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
           {loading ? <><Loader2 size={16} className="animate-spin" /> Scanning…</> : <><SearchCode size={16} /> Detect Code Smells</>}

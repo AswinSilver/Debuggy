@@ -10,9 +10,8 @@ import HealthRing from "../components/HealthRing";
 import SeverityBadge from "../components/SeverityBadge";
 import CopyBtn from "../components/CopyBtn";
 import SyntaxHighlight from "../components/SyntaxHighlight";
+import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
-
-const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
 
 const TOOLS = [
   { to: "/security",   Icon: ShieldCheck,  title: "Security Scanner",    desc: "OWASP · XSS · SQLi · CVEs" },
@@ -66,9 +65,7 @@ export default function Dashboard({ sharedCode, setSharedCode, sharedLang, setSh
               <p className="eyebrow">AI Code Review</p>
               <h2 className="heading">Paste Your Code</h2>
             </div>
-            <select value={lang} onChange={e => setLang(e.target.value)} className="select">
-              {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-            </select>
+            <LanguageSelect value={lang} onChange={setLang} />
           </div>
           <CodeEditor code={code} onChange={setCode} minHeight="380px" label="debuggy-buffer.ai" />
           <button

@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Gauge, Loader2, Cpu, TrendingUp, Clock, Database } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
 import Spinner from "../components/Spinner";
+import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
-
-const LANGUAGES = ["JavaScript","TypeScript","Python","Java","C","C++","C#","Go","Rust","Ruby","PHP","Swift","Kotlin"];
 
 function BigOChip({ label, value }) {
   return (
@@ -44,9 +43,7 @@ export default function Complexity({ sharedCode, sharedLang, toast }) {
             <h2 className="text-lg font-black text-white">Complexity Analyzer</h2>
           </div>
         </div>
-        <select value={lang} onChange={e => setLang(e.target.value)} className="select mb-3 w-full">
-          {LANGUAGES.map(l => <option key={l}>{l}</option>)}
-        </select>
+        <LanguageSelect value={lang} onChange={setLang} className="mb-3" />
         <CodeEditor code={code} onChange={setCode} minHeight="320px" />
         <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
           {loading ? <><Loader2 size={16} className="animate-spin" /> Analyzing…</> : <><Gauge size={16} /> Analyze Complexity</>}
