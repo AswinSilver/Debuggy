@@ -1,14 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Header  from "./components/Header";
-import SpaceBg from "./components/SpaceBg";
+import Sidebar    from "./components/Sidebar";
+import Header     from "./components/Header";
+import SpaceBg   from "./components/SpaceBg";
 import Dashboard  from "./pages/Dashboard";
 import Security   from "./pages/Security";
 import Complexity from "./pages/Complexity";
 import Tests      from "./pages/Tests";
 import Smells     from "./pages/Smells";
 import Converter  from "./pages/Converter";
+import AuthPage   from "./pages/AuthPage";
 
 const PAGE_TITLES = {
   "/":           "Dashboard",
@@ -20,6 +21,7 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
+  const [user,        setUser]        = useState(null);   // null = not logged in
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sharedCode,  setSharedCode]  = useState("");
   const [sharedLang,  setSharedLang]  = useState("JavaScript");
@@ -34,16 +36,28 @@ export default function App() {
     setTimeout(() => setToastMsg(""), 2200);
   }, []);
 
+  /* ── Auth gate ──────────────────────────────────────────────────────────── */
+  if (!user) {
+    return (
+      <div className="noise min-h-screen bg-[#060608] text-[#f1eef0]">
+        <SpaceBg />
+        <div className="grid-bg pointer-events-none fixed inset-0 opacity-60" style={{ zIndex: 1 }} />
+        <div className="relative z-10">
+          <AuthPage onAuth={(u) => setUser(u)} />
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Main app ───────────────────────────────────────────────────────────── */
   const pageProps = { sharedCode, setSharedCode, sharedLang, setSharedLang, toast };
 
   return (
     <div className="noise min-h-screen bg-[#060608] text-[#f1eef0]">
-      {/* Animated space background */}
       <SpaceBg />
-      {/* Subtle grid overlay */}
       <div className="grid-bg pointer-events-none fixed inset-0 opacity-60" style={{ zIndex: 1 }} />
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} onLogout={() => setUser(null)} />
 
       <div className="relative z-10 lg:pl-64">
         <Header
@@ -52,6 +66,8 @@ export default function App() {
           analysis={analysis}
           code={sharedCode}
           language={sharedLang}
+          user={user}
+          onLogout={() => setUser(null)}
         />
 
         <main className="p-4 sm:p-6 xl:p-8">
