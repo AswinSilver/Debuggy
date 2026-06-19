@@ -56,7 +56,7 @@ export default function Dashboard({ sharedCode, setSharedCode, sharedLang, setSh
   return (
     <div className="space-y-8 animate-fade-up">
       {/* Hero grid: editor + health ring */}
-      <section className="grid gap-5 xl:grid-cols-[1fr_300px]">
+      <section className="grid gap-5 xl:grid-cols-[1fr_320px]">
 
         {/* Editor panel */}
         <div className="card p-5">
@@ -80,8 +80,7 @@ export default function Dashboard({ sharedCode, setSharedCode, sharedLang, setSh
         </div>
 
         {/* Health score */}
-        <div className="card flex flex-col items-center justify-center p-6">
-          <p className="eyebrow mb-4">Code Health Score</p>
+        <div className="card flex flex-col justify-center p-5">
           <HealthRing
             score={result?.health_score ?? 0}
             category={result?.health_category ?? "Awaiting"}
