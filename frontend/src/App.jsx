@@ -9,8 +9,6 @@ import Complexity from "./pages/Complexity";
 import Tests      from "./pages/Tests";
 import Smells     from "./pages/Smells";
 import Converter  from "./pages/Converter";
-import AuthModal  from "./pages/AuthPage";
-import { getSession, clearSession } from "./lib/auth";
 
 const PAGE_TITLES = {
   "/":           "Dashboard",
@@ -22,9 +20,6 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
-  // Restore session from localStorage on first load
-  const [user,        setUser]        = useState(() => getSession());
-  const [authModal,   setAuthModal]   = useState(null); // null | "login" | "register"
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sharedCode,  setSharedCode]  = useState("");
   const [sharedLang,  setSharedLang]  = useState("JavaScript");
@@ -39,32 +34,14 @@ export default function App() {
     setTimeout(() => setToastMsg(""), 2200);
   }, []);
 
-  function handleAuth(authUser) {
-    setUser(authUser);
-    setAuthModal(null);
-    toast(`Welcome, ${authUser.name}! 👋`);
-  }
-
-  function handleLogout() {
-    clearSession();
-    setUser(null);
-    toast("Signed out successfully.");
-  }
-
   const pageProps = { sharedCode, setSharedCode, sharedLang, setSharedLang, toast };
 
   return (
     <div className="noise min-h-screen bg-[#060608] text-[#f1eef0]">
-      {/* Animated space background */}
       <SpaceBg />
       <div className="grid-bg pointer-events-none fixed inset-0 opacity-60" style={{ zIndex: 1 }} />
 
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        user={user}
-        onLogout={handleLogout}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="relative z-10 lg:pl-64">
         <Header
@@ -73,10 +50,6 @@ export default function App() {
           analysis={analysis}
           code={sharedCode}
           language={sharedLang}
-          user={user}
-          onSignUp={() => setAuthModal("register")}
-          onLogin={() => setAuthModal("login")}
-          onLogout={handleLogout}
         />
 
         <main className="p-4 sm:p-6 xl:p-8">
@@ -91,16 +64,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* Auth modal — renders over the dashboard */}
-      {authModal && (
-        <AuthModal
-          defaultMode={authModal}
-          onClose={() => setAuthModal(null)}
-          onAuth={handleAuth}
-        />
-      )}
-
-      {/* Toast notification */}
       {toastMsg && (
         <div className="fixed bottom-6 right-6 z-50 animate-fade-up rounded-xl
                         border border-white/10 bg-[#111116] px-4 py-3 text-sm

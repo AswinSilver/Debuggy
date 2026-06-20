@@ -104,7 +104,7 @@ export default function HealthRing({ score = 0, category = "Awaiting" }) {
           <circle
             cx={cx} cy={cy} r={R}
             fill="none"
-            stroke="url(#arc-grad)"
+            stroke={score === 0 ? "transparent" : "url(#arc-grad)"}
             strokeWidth="13"
             strokeDasharray={scoreDash}
             strokeDashoffset="0"
@@ -118,18 +118,19 @@ export default function HealthRing({ score = 0, category = "Awaiting" }) {
 
           {/* Glow dot at arc tip */}
           {score > 2 && (() => {
-            // position tip dot: angle goes from π (left) to 0 (right) as score 0→100
-            // with rotate(180): origin angle at left=0°, right=180°
-            // arc angle in rotated frame: 0 + (score/100)*180 degrees
-            const deg = (score / 100) * 180;
+            // position tip dot: angle goes from 180° (left) to 360° (right) as score 0→100
+            const deg = 180 + (score / 100) * 180;
             const rad = (deg * Math.PI) / 180;
             const tx = cx + R * Math.cos(rad);
             const ty = cy + R * Math.sin(rad);
             return (
               <circle
-                cx={tx} cy={ty} r="5"
-                fill={tier.color}
-                style={{ filter: `drop-shadow(0 0 8px ${tier.color})`, transition: "cx 1.1s cubic-bezier(0.4,0,0.2,1), cy 1.1s cubic-bezier(0.4,0,0.2,1)" }}
+                cx={tx} cy={ty} r="7"
+                fill="#ffffff"
+                stroke={tier.color}
+                strokeWidth="3"
+                filter="url(#arc-glow)"
+                style={{ transition: "cx 1.1s cubic-bezier(0.4,0,0.2,1), cy 1.1s cubic-bezier(0.4,0,0.2,1)" }}
               />
             );
           })()}

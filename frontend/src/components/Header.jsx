@@ -1,8 +1,8 @@
 import React from "react";
-import { Menu, Download, FileDown, LogIn, LogOut, User } from "lucide-react";
+import { Menu, Download, FileDown } from "lucide-react";
 import { download } from "../lib/utils";
 
-export default function Header({ title, onMenuOpen, analysis, code, language, user, onSignUp, onLogin, onLogout }) {
+export default function Header({ title, onMenuOpen, analysis, code, language }) {
   return (
     <header className="sticky top-0 z-20 border-b border-white/[0.07] bg-[#060608]/80 px-4 py-3.5 backdrop-blur-xl sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -21,73 +21,38 @@ export default function Header({ title, onMenuOpen, analysis, code, language, us
           </div>
         </div>
 
-        {/* Right: actions */}
-        <div className="flex items-center gap-2">
-
-          {/* Export buttons (only when analysis exists) */}
-          {analysis && (
-            <>
+        {/* Right: export actions */}
+        {analysis && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              className="btn-ghost text-xs"
+              onClick={() =>
+                download(
+                  "codexa-report.json",
+                  JSON.stringify(analysis, null, 2),
+                  "application/json"
+                )
+              }
+            >
+              <Download size={14} />
+              Export Report
+            </button>
+            {(analysis.fixed_code || analysis.secure_code || analysis.refactored_code) && (
               <button
                 className="btn-ghost text-xs"
                 onClick={() =>
-                  download("codexa-report.json", JSON.stringify(analysis, null, 2), "application/json")
+                  download(
+                    `fixed-code.${language?.toLowerCase() ?? "txt"}`,
+                    analysis.fixed_code || analysis.secure_code || analysis.refactored_code
+                  )
                 }
               >
-                <Download size={14} />
-                Export Report
+                <FileDown size={14} />
+                Export Fixed Code
               </button>
-              {(analysis.fixed_code || analysis.secure_code || analysis.refactored_code) && (
-                <button
-                  className="btn-ghost text-xs"
-                  onClick={() =>
-                    download(
-                      `fixed-code.${language?.toLowerCase() ?? "txt"}`,
-                      analysis.fixed_code || analysis.secure_code || analysis.refactored_code
-                    )
-                  }
-                >
-                  <FileDown size={14} />
-                  Export Fixed Code
-                </button>
-              )}
-            </>
-          )}
-
-          {/* Auth area */}
-          {user ? (
-            /* Logged-in: avatar chip + logout */
-            <div className="header-user-chip">
-              <div className="header-user-avatar">
-                {user.name?.[0]?.toUpperCase() ?? "U"}
-              </div>
-              <span className="header-user-name">{user.name}</span>
-              <button
-                onClick={onLogout}
-                className="header-logout-btn"
-                title="Sign out"
-              >
-                <LogOut size={14} />
-              </button>
-            </div>
-          ) : (
-            /* Logged-out: Sign In + Sign Up buttons */
-            <div className="flex items-center gap-2">
-              <button
-                onClick={onLogin}
-                className="header-signin-btn"
-              >
-                <LogIn size={14} />
-                Sign In
-              </button>
-              <button
-                onClick={onSignUp}
-                className="header-signup-btn"
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

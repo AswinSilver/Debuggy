@@ -1,8 +1,8 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, ShieldCheck, Gauge, FlaskConical,
-  SearchCode, Repeat2, X, Zap, LogOut, User,
+  SearchCode, Repeat2, X, Zap,
 } from "lucide-react";
 import { cx } from "../lib/utils";
 
@@ -15,7 +15,7 @@ const LINKS = [
   { to: "/converter",  label: "Code Converter",     icon: Repeat2 },
 ];
 
-export default function Sidebar({ open, onClose, user, onLogout }) {
+export default function Sidebar({ open, onClose }) {
   return (
     <>
       {/* Mobile backdrop */}
@@ -69,26 +69,6 @@ export default function Sidebar({ open, onClose, user, onLogout }) {
             </NavLink>
           ))}
         </nav>
-
-        {/* User chip */}
-        {user && (
-          <div className="mx-3 mb-2 flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-brand-500 font-black text-sm">
-              {user.name?.[0]?.toUpperCase() ?? "U"}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-[12px] font-bold text-white leading-none">{user.name}</p>
-              <p className="truncate text-[10px] text-zinc-600 mt-0.5">{user.email}</p>
-            </div>
-            <button
-              onClick={onLogout}
-              title="Sign out"
-              className="rounded-lg p-1.5 text-zinc-600 transition hover:text-brand-500"
-            >
-              <LogOut size={14} />
-            </button>
-          </div>
-        )}
 
         {/* Status badge */}
         <div className="mx-3 mb-4 rounded-xl border border-brand-500/20 bg-brand-500/[0.07] p-3">
