@@ -7,7 +7,7 @@ import SyntaxHighlight from "../components/SyntaxHighlight";
 import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
 
-export default function Converter({ sharedCode, sharedLang, toast }) {
+export default function Converter({ sharedCode, setSharedCode, sharedLang, setSharedLang, toast }) {
   const [code, setCode]       = useState(sharedCode || "");
   const [from, setFrom]       = useState(sharedLang || "JavaScript");
   const [to, setTo]           = useState("Python");
@@ -39,7 +39,14 @@ export default function Converter({ sharedCode, sharedLang, toast }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <LanguageSelect value={from} onChange={setFrom} className="flex-1" />
+          <LanguageSelect
+            value={from}
+            onChange={(newFrom) => {
+              setFrom(newFrom);
+              setSharedLang(newFrom);
+            }}
+            className="flex-1"
+          />
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
             <ArrowRight size={16} className="text-brand-500" />
           </div>
@@ -57,7 +64,15 @@ export default function Converter({ sharedCode, sharedLang, toast }) {
           <p className="mb-3 text-xs font-bold uppercase tracking-wider text-zinc-500">
             Source — {from}
           </p>
-          <CodeEditor code={code} onChange={setCode} minHeight="420px" label={`input.${from.toLowerCase()}`} />
+          <CodeEditor
+            code={code}
+            onChange={(newCode) => {
+              setCode(newCode);
+              setSharedCode(newCode);
+            }}
+            minHeight="420px"
+            label={`input.${from.toLowerCase()}`}
+          />
         </div>
 
         {/* Output */}

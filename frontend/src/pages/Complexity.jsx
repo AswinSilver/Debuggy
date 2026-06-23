@@ -14,7 +14,7 @@ function BigOChip({ label, value }) {
   );
 }
 
-export default function Complexity({ sharedCode, sharedLang, toast }) {
+export default function Complexity({ sharedCode, setSharedCode, sharedLang, setSharedLang, toast }) {
   const [code, setCode]       = useState(sharedCode || "");
   const [lang, setLang]       = useState(sharedLang || "JavaScript");
   const [result, setResult]   = useState(null);
@@ -43,8 +43,22 @@ export default function Complexity({ sharedCode, sharedLang, toast }) {
             <h2 className="text-lg font-black text-white">Complexity Analyzer</h2>
           </div>
         </div>
-        <LanguageSelect value={lang} onChange={setLang} className="mb-3" />
-        <CodeEditor code={code} onChange={setCode} minHeight="320px" />
+        <LanguageSelect
+          value={lang}
+          onChange={(newLang) => {
+            setLang(newLang);
+            setSharedLang(newLang);
+          }}
+          className="mb-3"
+        />
+        <CodeEditor
+          code={code}
+          onChange={(newCode) => {
+            setCode(newCode);
+            setSharedCode(newCode);
+          }}
+          minHeight="320px"
+        />
         <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
           {loading ? <><Loader2 size={16} className="animate-spin" /> Analyzing…</> : <><Gauge size={16} /> Analyze Complexity</>}
         </button>

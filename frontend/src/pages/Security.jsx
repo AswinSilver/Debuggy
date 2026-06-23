@@ -8,7 +8,7 @@ import SyntaxHighlight from "../components/SyntaxHighlight";
 import LanguageSelect from "../components/LanguageSelect";
 import { post } from "../lib/api";
 
-export default function Security({ sharedCode, sharedLang, toast }) {
+export default function Security({ sharedCode, setSharedCode, sharedLang, setSharedLang, toast }) {
   const [code, setCode]       = useState(sharedCode || "");
   const [lang, setLang]       = useState(sharedLang || "JavaScript");
   const [result, setResult]   = useState(null);
@@ -43,8 +43,22 @@ export default function Security({ sharedCode, sharedLang, toast }) {
               <h2 className="text-lg font-black text-white">Security Scanner</h2>
             </div>
           </div>
-          <LanguageSelect value={lang} onChange={setLang} className="mb-3" />
-          <CodeEditor code={code} onChange={setCode} minHeight="320px" />
+          <LanguageSelect
+            value={lang}
+            onChange={(newLang) => {
+              setLang(newLang);
+              setSharedLang(newLang);
+            }}
+            className="mb-3"
+          />
+          <CodeEditor
+            code={code}
+            onChange={(newCode) => {
+              setCode(newCode);
+              setSharedCode(newCode);
+            }}
+            minHeight="320px"
+          />
           <button className="btn-primary mt-3 w-full" onClick={run} disabled={loading}>
             {loading ? <><Loader2 size={16} className="animate-spin" /> Scanning…</> : <><ShieldCheck size={16} /> Run Security Scan</>}
           </button>
