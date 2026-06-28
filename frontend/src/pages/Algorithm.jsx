@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   BrainCircuit, Loader2, ArrowRightLeft, ChevronDown,
-  BookOpenText, Info, Wand2,
+  BookOpenText, Info,
 } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
 import CopyBtn from "../components/CopyBtn";
@@ -15,68 +15,6 @@ const OUTPUT_MODES = [
   { value: "pseudocode", label: "Pseudocode" },
 ];
 
-/* Quick example prompts for the Algorithm→Code direction */
-const PROMPT_EXAMPLES = [
-  {
-    label: "Check even or odd",
-    code: `Start
-Read a number n.
-If n modulo 2 equals 0:
-    Display "n is Even".
-Else:
-    Display "n is Odd".
-Stop.`,
-  },
-  {
-    label: "Find factorial",
-    code: `Start
-Read a number n.
-Set result = 1.
-Set i = 1.
-Repeat while i <= n:
-    Set result = result * i.
-    Increment i by 1.
-Display result.
-Stop.`,
-  },
-  {
-    label: "Fibonacci sequence",
-    code: `Start
-Read the number of terms n.
-Set a = 0, b = 1.
-Repeat n times:
-    Display a.
-    Set temp = a + b.
-    Set a = b.
-    Set b = temp.
-Stop.`,
-  },
-  {
-    label: "Linear search",
-    code: `Start
-Read the array and the target value.
-Set i = 0.
-Repeat while i < length of array:
-    If array[i] equals target:
-        Display "Found at index i".
-        Stop.
-    Increment i by 1.
-Display "Not found".
-Stop.`,
-  },
-  {
-    label: "Reverse a string",
-    code: `Start
-Read the string s.
-Set reversed = empty string.
-Set i = length of s minus 1.
-Repeat while i >= 0:
-    Append s[i] to reversed.
-    Decrement i by 1.
-Display reversed.
-Stop.`,
-  },
-];
 
 export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSharedLang, toast }) {
   const [code, setCode]         = useState(sharedCode || "");
@@ -86,25 +24,6 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
   const [result, setResult]     = useState(null);
   const [loading, setLoading]   = useState(false);
   const [modeOpen, setModeOpen] = useState(false);
-  const [prompt, setPrompt]     = useState("");
-
-  function applyPrompt() {
-    if (!prompt.trim()) return;
-    // Find a matching example first
-    const match = PROMPT_EXAMPLES.find(ex =>
-      ex.label.toLowerCase().includes(prompt.toLowerCase()) ||
-      prompt.toLowerCase().includes(ex.label.toLowerCase())
-    );
-    if (match) {
-      setCode(match.code);
-      setSharedCode(match.code);
-    } else {
-      // Generic: pre-fill with a template the user can edit
-      const template = `Start\nRead the input.\n// Describe your algorithm here for: ${prompt}\nStop.`;
-      setCode(template);
-      setSharedCode(template);
-    }
-  }
 
   const isCodeToAlgo = direction === "code_to_algo";
   const currentModeLabel = OUTPUT_MODES.find(m => m.value === mode)?.label ?? "Algorithm";
@@ -249,56 +168,10 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
             {isCodeToAlgo ? `Source — ${language}` : "Algorithm / Pseudocode Input"}
           </p>
 
-          {/* Prompt helper — only shown in algo→code direction */}
-          {!isCodeToAlgo && (
-            <div className="mb-3">
-              <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                <Wand2 size={11} className="text-violet-400" />
-                Quick Prompt — type a description to auto-fill the editor
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="algo-prompt-input"
-                  type="text"
-                  value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter') applyPrompt(); }}
-                  placeholder="e.g. code to check even or odd"
-                  className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2
-                             text-sm text-zinc-200 placeholder:text-zinc-600 outline-none
-                             focus:border-violet-500/50 focus:bg-violet-500/5 transition"
-                />
-                <button
-                  id="algo-prompt-apply"
-                  onClick={applyPrompt}
-                  className="flex shrink-0 items-center gap-1.5 rounded-xl border border-violet-500/30
-                             bg-violet-500/10 px-3 py-2 text-xs font-bold text-violet-300
-                             transition hover:bg-violet-500/20 hover:text-white"
-                >
-                  <Wand2 size={13} /> Fill
-                </button>
-              </div>
-              {/* Quick example chips */}
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {PROMPT_EXAMPLES.map(ex => (
-                  <button
-                    key={ex.label}
-                    onClick={() => { setPrompt(ex.label); setCode(ex.code); setSharedCode(ex.code); }}
-                    className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-2.5 py-1
-                               text-[11px] font-medium text-zinc-400 transition
-                               hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-violet-300"
-                  >
-                    {ex.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           <CodeEditor
             code={code}
             onChange={(v) => { setCode(v); setSharedCode(v); }}
-            minHeight="340px"
+            minHeight="420px"
             label={isCodeToAlgo ? `input.${language.toLowerCase()}` : "algorithm.txt"}
           />
         </div>

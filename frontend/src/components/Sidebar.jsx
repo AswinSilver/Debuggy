@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, ShieldCheck, Gauge, FlaskConical,
-  SearchCode, Repeat2, X, Zap, BrainCircuit,
+  SearchCode, Repeat2, X, Zap, BrainCircuit, Sparkles,
 } from "lucide-react";
 import { cx } from "../lib/utils";
 
@@ -13,7 +13,8 @@ const LINKS = [
   { to: "/tests",      label: "Test Generator",     icon: FlaskConical },
   { to: "/smells",     label: "Code Smell Detector",icon: SearchCode },
   { to: "/converter",  label: "Code Converter",     icon: Repeat2 },
-  { to: "/algorithm",  label: "Algorithm Generator",icon: BrainCircuit },
+  { to: "/algorithm",    label: "Algorithm Generator",icon: BrainCircuit },
+  { to: "/prompt-to-code", label: "Prompt to Code",   icon: Sparkles },
 ];
 
 export default function Sidebar({ open, onClose }) {

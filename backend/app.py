@@ -74,6 +74,11 @@ class AlgorithmRequest(BaseModel):
     direction: str = "code_to_algo"  # "code_to_algo" | "algo_to_code"
 
 
+class PromptToCodeRequest(BaseModel):
+    prompt: str
+    language: str = "Python"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Endpoints
 # ─────────────────────────────────────────────────────────────────────────────
@@ -322,4 +327,38 @@ Respond with ONLY this JSON:
     return {
         "output": "# AI offline — set GROQ_API_KEY.",
         "explanation": "AI offline — set GROQ_API_KEY.",
+    }
+
+
+# ── /prompt_to_code ───────────────────────────────────────────────────────────
+@app.post("/prompt_to_code")
+def prompt_to_code(req: PromptToCodeRequest) -> dict[str, Any]:
+    result = ai(
+        prompt=f"Generate {req.language} code for the following task:\n\n\"{req.prompt}\"",
+        system=f"""You are an expert {req.language} programmer and educator. Given a plain-English task description, write complete, correct, and well-commented {req.language} code.
+
+Rules:
+1. The code MUST be fully functional and correct — it should run without errors.
+2. Include helpful inline comments explaining key steps.
+3. For simple problems, show example usage or a test case at the end (commented out or as a main block).
+4. Do NOT include markdown fences in the code field.
+5. Keep the explanation concise but informative.
+6. Usage hints should be practical tips on how to run, extend, or adapt the code.
+
+Respond with ONLY this JSON:
+{{
+  "code": "<complete, correct, runnable {req.language} code — no markdown fences>",
+  "explanation": "<2-4 sentence explanation of how the code works and the approach used>",
+  "usage_hints": ["<practical tip 1>", "<practical tip 2>", "<practical tip 3>"]
+}}""",
+        max_tokens=2000,
+    )
+
+    if result:
+        return result
+
+    return {
+        "code": f"# AI offline — set GROQ_API_KEY.\n# Prompt: {req.prompt}",
+        "explanation": "AI offline — set GROQ_API_KEY.",
+        "usage_hints": [],
     }
