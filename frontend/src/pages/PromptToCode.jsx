@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   Sparkles, Loader2, Wand2, Copy, Check,
-  ChevronDown, Lightbulb, Code2, Info, RefreshCw,
+  Lightbulb, Code2, Info, RefreshCw,
 } from "lucide-react";
 import SyntaxHighlight from "../components/SyntaxHighlight";
 import LanguageSelect from "../components/LanguageSelect";
@@ -78,25 +78,24 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
       <div className="card p-6 relative z-[30]">
         <div className="mb-5 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl
-                          bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20
-                          border border-violet-500/20">
-            <Sparkles size={20} className="text-violet-400" />
+                          bg-brand-500/15 border border-brand-500/20">
+            <Sparkles size={20} className="text-brand-400" />
           </div>
           <div>
-            <p className="eyebrow" style={{ color: "#a78bfa" }}>AI Feature</p>
+            <p className="eyebrow">AI Feature</p>
             <h2 className="text-lg font-black text-white">Prompt to Code</h2>
           </div>
           <div className="ml-auto hidden sm:flex items-center gap-1.5 rounded-full
-                          border border-violet-500/20 bg-violet-500/10 px-3 py-1">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet-400" />
-            <span className="text-[11px] font-bold text-violet-300">AI Powered</span>
+                          border border-brand-500/25 bg-brand-500/10 px-3 py-1">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-400" />
+            <span className="text-[11px] font-bold text-brand-300">AI Powered</span>
           </div>
         </div>
 
         {/* Prompt textarea */}
         <div className="relative mb-4">
           <div className="pointer-events-none absolute left-4 top-4">
-            <Wand2 size={16} className="text-violet-400/60" />
+            <Wand2 size={16} className="text-brand-500/60" />
           </div>
           <textarea
             ref={textareaRef}
@@ -104,11 +103,11 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) generate(); }}
-            placeholder="Describe the code you want… e.g. &quot;Check if a number is even or odd&quot;"
+            placeholder={`Describe the code you want… e.g. "Check if a number is even or odd"`}
             rows={3}
             className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.03]
                        py-4 pl-10 pr-4 text-sm text-zinc-100 placeholder:text-zinc-600
-                       outline-none transition focus:border-violet-500/50 focus:bg-violet-500/[0.04]
+                       outline-none transition focus:border-brand-500/50 focus:bg-brand-500/[0.04]
                        leading-relaxed"
             style={{ minHeight: 80, maxHeight: 200 }}
           />
@@ -128,7 +127,6 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
           <button
             id="ptc-generate-btn"
             className="btn-primary shrink-0"
-            style={{ background: "linear-gradient(135deg, #7c3aed, #a855f7)" }}
             onClick={generate}
             disabled={loading}
           >
@@ -155,7 +153,7 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
               onClick={() => useExample(ex)}
               className="group flex items-center gap-2 rounded-xl border border-white/[0.07]
                          bg-white/[0.025] px-3 py-2 text-left transition-all duration-200
-                         hover:border-violet-500/40 hover:bg-violet-500/[0.07]"
+                         hover:border-brand-500/40 hover:bg-brand-500/[0.07]"
             >
               <span className="text-base leading-none">{ex.icon}</span>
               <span className="text-[12px] font-medium text-zinc-400 group-hover:text-zinc-200 transition">
@@ -163,7 +161,7 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
               </span>
               <span className="ml-1 rounded-md border border-white/[0.06] bg-white/[0.02]
                                px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide
-                               text-zinc-600 group-hover:border-violet-500/20 group-hover:text-violet-400 transition">
+                               text-zinc-600 group-hover:border-brand-500/20 group-hover:text-brand-400 transition">
                 {ex.tag}
               </span>
             </button>
@@ -186,7 +184,7 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
             <div className="flex items-center justify-between border-b border-white/[0.07]
                             bg-white/[0.02] px-5 py-3">
               <div className="flex items-center gap-2">
-                <Code2 size={15} className="text-violet-400" />
+                <Code2 size={15} className="text-brand-500" />
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Generated {language} Code
                 </span>
@@ -197,7 +195,7 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
                   onClick={regenerate}
                   className="flex items-center gap-1.5 rounded-lg border border-white/10
                              bg-white/[0.03] px-2.5 py-1.5 text-[11px] font-bold text-zinc-400
-                             transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-300"
+                             transition hover:border-brand-500/30 hover:bg-brand-500/10 hover:text-brand-300"
                 >
                   <RefreshCw size={12} /> Regenerate
                 </button>
@@ -223,7 +221,7 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
           {result.explanation && (
             <div className="card p-5 animate-fade-in">
               <div className="mb-3 flex items-center gap-2">
-                <Info size={16} className="text-violet-400" />
+                <Info size={16} className="text-brand-500" />
                 <h3 className="font-black text-white">How it works</h3>
               </div>
               <p className="text-sm leading-7 text-zinc-300 whitespace-pre-line">
@@ -242,8 +240,8 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
               <ul className="space-y-2">
                 {result.usage_hints.map((hint, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-zinc-300">
-                    <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-amber-500/20
-                                     text-amber-400 text-[10px] font-black
+                    <span className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-brand-500/20
+                                     text-brand-400 text-[10px] font-black
                                      flex items-center justify-center">{i + 1}</span>
                     {hint}
                   </li>
@@ -258,8 +256,8 @@ export default function PromptToCode({ sharedCode, setSharedCode, sharedLang, se
       {!loading && !result && (
         <div className="empty-state min-h-[260px]">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl
-                          border border-violet-500/20 bg-violet-500/10">
-            <Sparkles size={28} className="text-violet-500/60" />
+                          border border-brand-500/20 bg-brand-500/10">
+            <Sparkles size={28} className="text-brand-500/70" />
           </div>
           <div className="space-y-1 text-center">
             <p className="font-semibold text-zinc-500">Your generated code will appear here</p>
