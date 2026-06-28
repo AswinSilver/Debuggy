@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, ShieldCheck, Gauge, FlaskConical,
-  SearchCode, Repeat2, X, Zap, BrainCircuit, Sparkles,
+  SearchCode, Repeat2, X, BrainCircuit, Sparkles,
 } from "lucide-react";
 import { cx } from "../lib/utils";
 
@@ -37,14 +37,41 @@ export default function Sidebar({ open, onClose }) {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5">
           <div className="flex items-center gap-3">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 shadow-glow">
-              <Zap size={18} className="text-white" />
-              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#08080c]" />
+            {/* Nebula custom logo */}
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl overflow-hidden"
+                 style={{
+                   background: "linear-gradient(135deg, #4f1c8a 0%, #7c3aed 50%, #a855f7 100%)",
+                   boxShadow: "0 0 18px rgba(139,92,246,0.55), 0 0 40px rgba(168,85,247,0.2)",
+                 }}>
+              {/* Nebula SVG icon */}
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
+                {/* Outer ring */}
+                <ellipse cx="12" cy="12" rx="9" ry="4.5" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8"
+                         transform="rotate(-30 12 12)" />
+                {/* Inner ring */}
+                <ellipse cx="12" cy="12" rx="6" ry="3" stroke="rgba(255,255,255,0.5)" strokeWidth="0.8"
+                         transform="rotate(40 12 12)" />
+                {/* Core glow dot */}
+                <circle cx="12" cy="12" r="2.2" fill="white" opacity="0.95" />
+                {/* Star sparkles */}
+                <circle cx="6.5" cy="8"   r="0.7" fill="white" opacity="0.8" />
+                <circle cx="17" cy="15.5" r="0.6" fill="white" opacity="0.7" />
+                <circle cx="15" cy="6.5"  r="0.5" fill="white" opacity="0.6" />
+                <circle cx="8"  cy="16"   r="0.5" fill="white" opacity="0.6" />
+              </svg>
+              {/* Online pulse dot */}
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2"
+                    style={{ boxShadow: "0 0 6px #34d399" }} />
             </div>
-            <div>
-              <p className="text-sm font-black leading-none text-white">Codexa</p>
-              <p className="mt-0.5 text-[10px] text-zinc-500">Code Analysis Platform</p>
-            </div>
+            <p className="text-sm font-black leading-none tracking-wide"
+               style={{
+                 background: "linear-gradient(90deg, #e0d4ff 0%, #c084fc 50%, #a855f7 100%)",
+                 WebkitBackgroundClip: "text",
+                 WebkitTextFillColor: "transparent",
+                 letterSpacing: "0.06em",
+               }}>
+              NEBULA
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -73,14 +100,12 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         {/* Status badge */}
-        <div className="mx-3 mb-4 rounded-xl border border-brand-500/20 bg-brand-500/[0.07] p-3">
+        <div className="mx-3 mb-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-3">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 animate-pulse-slow rounded-full bg-emerald-400" />
-            <span className="text-xs font-bold text-white">System Online</span>
+            <span className="h-2 w-2 animate-pulse-slow rounded-full bg-emerald-400"
+                  style={{ boxShadow: "0 0 6px #34d399" }} />
+            <span className="text-xs font-bold text-white">Online</span>
           </div>
-          <p className="mt-1 text-[11px] leading-4 text-zinc-500">
-            All analysis engines ready
-          </p>
         </div>
       </aside>
     </>

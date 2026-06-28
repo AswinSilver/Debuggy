@@ -28,7 +28,7 @@ export default function Header({ title, onMenuOpen, analysis, code, language }) 
               className="btn-ghost text-xs"
               onClick={() =>
                 download(
-                  "codexa-report.json",
+                  "nebula-report.json",
                   JSON.stringify(analysis, null, 2),
                   "application/json"
                 )

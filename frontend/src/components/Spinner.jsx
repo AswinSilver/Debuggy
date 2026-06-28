@@ -12,7 +12,7 @@ export default function Spinner({ label = "Analyzing with AI..." }) {
       </div>
       <div className="text-center">
         <p className="text-sm font-bold text-white">{label}</p>
-        <p className="mt-1 text-xs text-zinc-500">Groq · llama-3.3-70b-versatile</p>
+        <p className="mt-1 text-xs text-zinc-500">Nebula AI · Powered by Groq</p>
       </div>
     </div>
   );
