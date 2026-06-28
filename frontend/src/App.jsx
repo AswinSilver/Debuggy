@@ -9,6 +9,7 @@ import Complexity from "./pages/Complexity";
 import Tests      from "./pages/Tests";
 import Smells     from "./pages/Smells";
 import Converter  from "./pages/Converter";
+import Algorithm  from "./pages/Algorithm";
 
 const PAGE_TITLES = {
   "/":           "Dashboard",
@@ -17,6 +18,7 @@ const PAGE_TITLES = {
   "/tests":      "Test Generator",
   "/smells":     "Code Smell Detector",
   "/converter":  "Code Converter",
+  "/algorithm":  "Algorithm Generator",
 };
 
 export default function App() {
@@ -60,6 +62,7 @@ export default function App() {
             <Route path="/tests"      element={<Tests      {...pageProps} />} />
             <Route path="/smells"     element={<Smells     {...pageProps} />} />
             <Route path="/converter"  element={<Converter  {...pageProps} />} />
+            <Route path="/algorithm"  element={<Algorithm  {...pageProps} />} />
           </Routes>
         </main>
       </div>

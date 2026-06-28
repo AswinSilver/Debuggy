@@ -67,6 +67,13 @@ class ConvertRequest(CodeRequest):
     target_language: str = "Python"
 
 
+class AlgorithmRequest(BaseModel):
+    code: str
+    language: str = "JavaScript"
+    mode: str = "algorithm"          # "algorithm" | "pseudocode"
+    direction: str = "code_to_algo"  # "code_to_algo" | "algo_to_code"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Endpoints
 # ─────────────────────────────────────────────────────────────────────────────
@@ -247,4 +254,72 @@ def convert(req: ConvertRequest) -> dict[str, Any]:
     return {
         "converted_code": f"# AI offline — set GROQ_API_KEY.\n{req.code}",
         "notes": "AI offline — set GROQ_API_KEY.",
+    }
+
+
+# ── /algorithm ────────────────────────────────────────────────────────────────
+@app.post("/algorithm")
+def algorithm(req: AlgorithmRequest) -> dict[str, Any]:
+    if req.direction == "code_to_algo":
+        if req.mode == "pseudocode":
+            system = """You are an expert computer science educator. Given source code, produce clean, readable PSEUDOCODE that captures the logic without any syntax-specific details.
+Format the pseudocode with clear indentation and use high-level constructs like:
+  SET, READ, IF/ELSE, REPEAT WHILE, FOR EACH, RETURN, CALL, etc.
+Respond with ONLY this JSON:
+{
+  "output": "<the pseudocode as a plain multiline string — no markdown fences>",
+  "explanation": "<brief explanation of the algorithm's purpose and key steps>"
+}"""
+            prompt = f"Convert this {req.language} code to pseudocode:\n\n```\n{req.code}\n```"
+        else:
+            system = """You are an expert computer science educator. Given source code, produce a step-by-step ALGORITHM description in plain English.
+
+STRICT FORMAT RULES — follow exactly:
+1. Start with "Start"
+2. Number each top-level step on its own line.
+3. Use "Read", "Set", "Repeat while", "If", "Display", "Return", "Call", "Increment", "Decrement" etc. as action verbs.
+4. Use indentation (4 spaces) for nested steps (loop body, if body).
+5. End with "Stop."
+6. Do NOT use any bullet points, dashes, or markdown — plain numbered lines only.
+7. Write in full, natural English sentences for each step.
+
+Example style:
+Start
+Read the number of elements n.
+Read the n elements into the array.
+Set i = 0.
+Repeat while i < n - 1:
+    Set j = 0.
+    Repeat while j < n - i - 1:
+        Compare the element at position j with the element at position j + 1.
+        If the element at position j is greater than the element at position j + 1, swap the two elements.
+        Increment j by 1.
+    Increment i by 1.
+Display the sorted array.
+Stop.
+
+Respond with ONLY this JSON:
+{
+  "output": "<the algorithm as a plain multiline string — no markdown fences>",
+  "explanation": "<brief explanation of the algorithm's purpose and key steps>"
+}"""
+            prompt = f"Convert this {req.language} code to a step-by-step algorithm:\n\n```\n{req.code}\n```"
+    else:
+        # algo_to_code
+        system = f"""You are an expert programmer. Given a step-by-step algorithm or pseudocode, produce clean, idiomatic {req.language} code that implements it exactly.
+Respond with ONLY this JSON:
+{{
+  "output": "<the complete {req.language} code, no markdown fences>",
+  "explanation": "<brief explanation of what was implemented and any assumptions made>"
+}}"""
+        prompt = f"Implement the following algorithm/pseudocode in {req.language}:\n\n{req.code}"
+
+    result = ai(prompt=prompt, system=system, max_tokens=2000)
+
+    if result:
+        return result
+
+    return {
+        "output": "# AI offline — set GROQ_API_KEY.",
+        "explanation": "AI offline — set GROQ_API_KEY.",
     }
