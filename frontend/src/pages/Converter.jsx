@@ -28,7 +28,7 @@ export default function Converter({ sharedCode, setSharedCode, sharedLang, setSh
   return (
     <div className="space-y-5 animate-fade-up">
       {/* Language selectors row */}
-      <div className="card p-5">
+      <div className="card p-5 relative z-10">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
             <Repeat2 size={18} className="text-brand-500" />

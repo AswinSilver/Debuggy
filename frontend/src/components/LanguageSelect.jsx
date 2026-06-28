@@ -165,7 +165,7 @@ export default function LanguageSelect({ value, onChange, className = "" }) {
     <div
       ref={ref}
       className={`lang-select-root ${className}`}
-      style={{ position: "relative", minWidth: 170, zIndex: 50 }}
+      style={{ position: "relative", minWidth: 170, zIndex: open ? 100 : 50 }}
     >
       {/* Trigger button */}
       <button

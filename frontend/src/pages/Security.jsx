@@ -33,7 +33,7 @@ export default function Security({ sharedCode, setSharedCode, sharedLang, setSha
     <div className="grid gap-6 xl:grid-cols-[420px_1fr] animate-fade-up">
       {/* Input panel */}
       <div className="space-y-4">
-        <div className="card p-5">
+        <div className="card p-5 relative z-10">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
               <ShieldCheck size={18} className="text-brand-500" />

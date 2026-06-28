@@ -59,7 +59,7 @@ export default function Dashboard({ sharedCode, setSharedCode, sharedLang, setSh
       <section className="grid gap-5 xl:grid-cols-[1fr_320px]">
 
         {/* Editor panel */}
-        <div className="card p-5">
+        <div className="card p-5 relative z-10">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="eyebrow">AI Code Review</p>

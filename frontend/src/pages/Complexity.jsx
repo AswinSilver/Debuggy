@@ -33,7 +33,7 @@ export default function Complexity({ sharedCode, setSharedCode, sharedLang, setS
   return (
     <div className="grid gap-6 xl:grid-cols-[420px_1fr] animate-fade-up">
       {/* Input */}
-      <div className="card p-5 h-fit">
+      <div className="card p-5 h-fit relative z-10">
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
             <Gauge size={18} className="text-brand-500" />
