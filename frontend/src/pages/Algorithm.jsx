@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   BrainCircuit, Loader2, ArrowRightLeft, ChevronDown,
-  BookOpenText, Info,
+  BookOpenText, Info, Wand2,
 } from "lucide-react";
 import CodeEditor from "../components/CodeEditor";
 import CopyBtn from "../components/CopyBtn";
