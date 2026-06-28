@@ -61,8 +61,8 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
       {/* ── Controls card ─────────────────────────────────────────── */}
       <div className="card p-5 relative z-[30]">  
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/15">
-            <BrainCircuit size={18} className="text-violet-400" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500/15">
+            <BrainCircuit size={18} className="text-brand-500" />
           </div>
           <div>
             <p className="eyebrow">Advanced Tool</p>
@@ -86,9 +86,9 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
             title={isCodeToAlgo ? "Switch to: Algorithm → Code" : "Switch to: Code → Algorithm"}
             className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-white/10
                        bg-white/[0.04] px-3 text-xs font-semibold text-zinc-300 transition
-                       hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white"
+                       hover:border-brand-500/40 hover:bg-brand-500/10 hover:text-white"
           >
-            <ArrowRightLeft size={14} className="text-violet-400" />
+            <ArrowRightLeft size={14} className="text-brand-500" />
             {isCodeToAlgo ? "Code → Algorithm" : "Algorithm → Code"}
           </button>
 
@@ -100,9 +100,9 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
                 onClick={() => setModeOpen(o => !o)}
                 className="flex h-9 items-center gap-2 rounded-xl border border-white/10
                            bg-white/[0.04] px-3 text-xs font-semibold text-zinc-300 transition
-                           hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white"
+                           hover:border-brand-500/40 hover:bg-brand-500/10 hover:text-white"
               >
-                <BookOpenText size={14} className="text-violet-400" />
+                <BookOpenText size={14} className="text-brand-500" />
                 {currentModeLabel}
                 <ChevronDown size={13} className={`transition-transform ${modeOpen ? "rotate-180" : ""}`} />
               </button>
@@ -116,9 +116,9 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
                       onClick={() => { setMode(opt.value); setModeOpen(false); setResult(null); }}
                       className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-semibold
                         transition hover:bg-white/5
-                        ${mode === opt.value ? "text-violet-400" : "text-zinc-300"}`}
+                        ${mode === opt.value ? "text-brand-400" : "text-zinc-300"}`}
                     >
-                      {mode === opt.value && <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />}
+                      {mode === opt.value && <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />}
                       {mode !== opt.value && <span className="h-1.5 w-1.5 rounded-full bg-transparent" />}
                       {opt.label}
                     </button>
@@ -150,7 +150,7 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
             : (mode === "pseudocode" ? "Pseudocode" : "Algorithm / Pseudocode")}
         </span>
         <div className="flex-1 border-t border-white/[0.06]" />
-        <ArrowRightLeft size={13} className="text-violet-400/60" />
+        <ArrowRightLeft size={13} className="text-brand-500/60" />
         <div className="flex-1 border-t border-white/[0.06]" />
         <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
           {isCodeToAlgo
@@ -214,7 +214,7 @@ export default function Algorithm({ sharedCode, setSharedCode, sharedLang, setSh
       {result?.explanation && (
         <div className="card p-5 animate-fade-in">
           <div className="mb-3 flex items-center gap-2">
-            <Info size={17} className="text-violet-400" />
+            <Info size={17} className="text-brand-500" />
             <h3 className="font-black text-white">Explanation</h3>
           </div>
           <p className="text-sm leading-7 text-zinc-300 whitespace-pre-line">

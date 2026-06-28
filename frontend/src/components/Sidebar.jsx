@@ -38,37 +38,30 @@ export default function Sidebar({ open, onClose }) {
         <div className="flex items-center justify-between px-5 py-5">
           <div className="flex items-center gap-3">
             {/* Nebula custom logo */}
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl overflow-hidden"
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl"
                  style={{
                    background: "linear-gradient(135deg, #7b0814 0%, #d40e22 55%, #ef1d32 100%)",
-                   boxShadow: "0 0 18px rgba(239,29,50,0.50), 0 0 40px rgba(239,29,50,0.18)",
+                   boxShadow: "0 0 20px rgba(239,29,50,0.55), 0 0 45px rgba(239,29,50,0.2)",
                  }}>
-              {/* Nebula SVG icon */}
               <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
-                {/* Outer ring */}
-                <ellipse cx="12" cy="12" rx="9" ry="4.5" stroke="rgba(255,255,255,0.35)" strokeWidth="0.8"
+                <ellipse cx="12" cy="12" rx="9" ry="4.5" stroke="rgba(255,255,255,0.4)" strokeWidth="0.9"
                          transform="rotate(-30 12 12)" />
-                {/* Inner ring */}
-                <ellipse cx="12" cy="12" rx="6" ry="3" stroke="rgba(255,255,255,0.55)" strokeWidth="0.8"
+                <ellipse cx="12" cy="12" rx="5.5" ry="2.8" stroke="rgba(255,255,255,0.65)" strokeWidth="0.9"
                          transform="rotate(40 12 12)" />
-                {/* Core glow dot */}
-                <circle cx="12" cy="12" r="2.2" fill="white" opacity="0.95" />
-                {/* Star sparkles */}
-                <circle cx="6.5" cy="8"   r="0.7" fill="white" opacity="0.8" />
-                <circle cx="17" cy="15.5" r="0.6" fill="white" opacity="0.7" />
-                <circle cx="15" cy="6.5"  r="0.5" fill="white" opacity="0.6" />
-                <circle cx="8"  cy="16"   r="0.5" fill="white" opacity="0.6" />
+                <circle cx="12" cy="12" r="2.4" fill="white" opacity="1" />
+                <circle cx="6.5" cy="8"   r="0.8" fill="white" opacity="0.85" />
+                <circle cx="17" cy="15.5" r="0.7" fill="white" opacity="0.75" />
+                <circle cx="15" cy="6.5"  r="0.6" fill="white" opacity="0.65" />
+                <circle cx="8"  cy="16.5" r="0.6" fill="white" opacity="0.65" />
               </svg>
-              {/* Online pulse dot */}
-              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#08080c]"
-                    style={{ boxShadow: "0 0 6px #34d399" }} />
             </div>
-            <p className="text-sm font-black leading-none tracking-wide"
-               style={{
-                 background: "linear-gradient(90deg, #ffffff 0%, #ffcdd2 50%, #ef1d32 100%)",
-                 WebkitBackgroundClip: "text",
-                 WebkitTextFillColor: "transparent",
-                 letterSpacing: "0.06em",
+            <p style={{
+                 fontSize: "1.05rem",
+                 fontWeight: 900,
+                 letterSpacing: "0.12em",
+                 color: "#ffffff",
+                 textShadow: "0 0 20px rgba(239,29,50,0.6), 0 0 8px rgba(239,29,50,0.3)",
+                 lineHeight: 1,
                }}>
               NEBULA
             </p>
